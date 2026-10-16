@@ -76,7 +76,23 @@
             </p>
 
             <div class="card content-card mt-4 p-4">
+            <div class="row g-3 mb-4">
+    <div class="col-md-8">
+        <input type="search"
+               id="workerSearch"
+               class="form-control"
+               placeholder="Search workers by name or skill...">
+    </div>
 
+    <div class="col-md-4">
+        <select id="workerAvailability"
+                class="form-select">
+            <option value="all">All workers</option>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+        </select>
+    </div>
+</div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Worker List</h5>
 
@@ -87,7 +103,8 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table id="workerTable"
+       class="table table-hover align-middle">
 
                         <thead class="table-light">
                         <tr>
@@ -125,5 +142,43 @@
         </main>
     </div>
 </div>
+<script>
+    const workerSearch = document.getElementById("workerSearch");
+    const availabilityFilter =
+        document.getElementById("workerAvailability");
+    const workerTable = document.getElementById("workerTable");
+
+    function filterWorkers() {
+        const searchTerm = workerSearch.value.toLowerCase();
+        const selectedAvailability = availabilityFilter.value;
+
+        const rows = workerTable.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            if (row.cells.length < 4) {
+                return;
+            }
+
+            const name = row.cells[1].textContent.toLowerCase();
+            const skill = row.cells[2].textContent.toLowerCase();
+            const availability =
+                row.cells[3].textContent.trim().toLowerCase();
+
+            const searchMatches =
+                name.includes(searchTerm) ||
+                skill.includes(searchTerm);
+
+            const availabilityMatches =
+                selectedAvailability === "all" ||
+                availability === selectedAvailability;
+
+            row.style.display =
+                searchMatches && availabilityMatches ? "" : "none";
+        });
+    }
+
+    workerSearch.addEventListener("input", filterWorkers);
+    availabilityFilter.addEventListener("change", filterWorkers);
+</script>
 </body>
 </html>
