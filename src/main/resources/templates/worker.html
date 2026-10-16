@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - ServiceNexus</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main>
+        <h1>Worker Dashboard</h1>
+        <p>Manage your service listings on ServiceNexus.</p>
+
+        <h2>Add a Service</h2>
+
+        <form th:action="@{/worker/services}" method="post">
+            <label for="name">Service Name</label>
+            <input type="text" id="name" name="name" required maxlength="100">
+
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" required maxlength="100">
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description"
+                      required maxlength="1000"></textarea>
+
+            <label for="price">Price</label>
+            <input type="number" id="price" name="price"
+                   min="0.01" step="0.01" required>
+
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location"
+                   required maxlength="200">
+
+            <button type="submit">Add Service</button>
+        </form>
+
+        <h2>Your Service Listings</h2>
+
+        <p th:if="${#lists.isEmpty(services)}">
+            No service listings have been added yet.
+        </p>
+
+        <div th:each="service : ${services}">
+            <article>
+                <h3 th:text="${service.name}">Service Name</h3>
+                <p>
+                    Category:
+                    <span th:text="${service.category}">Category</span>
+                </p>
+                <p th:text="${service.description}">Description</p>
+                <p>
+                    Price:
+                    <span th:text="${service.price}">0.00</span>
+                </p>
+                <p>
+                    Location:
+                    <span th:text="${service.location}">Location</span>
+                </p>
+            </article>
+        </div>
+    </main>
+</body>
+</html>
