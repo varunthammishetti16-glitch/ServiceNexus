@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ServiceNexus | Manage Bookings</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7f6;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: #14532d;
+            padding: 25px 15px;
+        }
+
+        .sidebar h3 {
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #166534;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .content-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar">
+            <h3>ServiceNexus</h3>
+
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/customers}">Customers</a>
+            <a th:href="@{/admin/workers}">Workers</a>
+            <a class="active" th:href="@{/admin/bookings}">Bookings</a>
+            <a th:href="@{/admin/cooperatives}">Cooperatives</a>
+            <a th:href="@{/}">Back to Home</a>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 main-content">
+
+            <h2>Manage Bookings</h2>
+
+            <p class="text-secondary">
+                Monitor customer service requests and booking statuses.
+            </p>
+
+            <div class="card content-card mt-4 p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Booking List</h5>
+
+                    <span class="badge text-bg-success"
+                          th:text="${bookingCount} + ' Bookings'">
+                        0 Bookings
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Service</th>
+                            <th>Worker</th>
+                            <th>Booking Date</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(bookings)}">
+                            <td colspan="6"
+                                class="text-center text-secondary py-4">
+                                No booking records available yet.
+                            </td>
+                        </tr>
+
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.id}">1</td>
+                            <td th:text="${booking.customer}">Customer</td>
+                            <td th:text="${booking.service}">Service</td>
+                            <td th:text="${booking.worker}">Worker</td>
+                            <td th:text="${booking.date}">2026-10-16</td>
+                            <td>
+                                <span class="badge text-bg-secondary"
+                                      th:text="${booking.status}">
+                                    Pending
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <p class="text-secondary small mb-0">
+                    Booking records will appear here after database integration.
+                </p>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+</body>
+</html>
