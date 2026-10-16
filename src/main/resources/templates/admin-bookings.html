@@ -76,7 +76,25 @@
             </p>
 
             <div class="card content-card mt-4 p-4">
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <input type="search"
+               id="bookingSearch"
+               class="form-control"
+               placeholder="Search by customer, service, or worker...">
+    </div>
 
+    <div class="col-md-6">
+        <select id="bookingStatus" class="form-select">
+            <option value="all">All booking statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="in progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+    </div>
+</div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Booking List</h5>
 
@@ -87,7 +105,8 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                   <table id="bookingTable"
+       class="table table-hover align-middle">
 
                         <thead class="table-light">
                         <tr>
@@ -135,5 +154,46 @@
         </main>
     </div>
 </div>
+<script>
+    const bookingSearch = document.getElementById("bookingSearch");
+    const bookingStatus = document.getElementById("bookingStatus");
+    const bookingTable = document.getElementById("bookingTable");
+
+    function filterBookings() {
+        const searchTerm = bookingSearch.value.toLowerCase().trim();
+        const selectedStatus = bookingStatus.value;
+
+        const rows = bookingTable.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            // Skip the empty-state message.
+            if (row.cells.length < 6) {
+                return;
+            }
+
+            const customer = row.cells[1].textContent.toLowerCase();
+            const service = row.cells[2].textContent.toLowerCase();
+            const worker = row.cells[3].textContent.toLowerCase();
+            const status = row.cells[5].textContent
+                .trim()
+                .toLowerCase();
+
+            const searchMatches =
+                customer.includes(searchTerm) ||
+                service.includes(searchTerm) ||
+                worker.includes(searchTerm);
+
+            const statusMatches =
+                selectedStatus === "all" ||
+                status === selectedStatus;
+
+            row.style.display =
+                searchMatches && statusMatches ? "" : "none";
+        });
+    }
+
+    bookingSearch.addEventListener("input", filterBookings);
+    bookingStatus.addEventListener("change", filterBookings);
+</script>
 </body>
 </html>
