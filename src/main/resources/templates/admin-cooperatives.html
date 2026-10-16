@@ -76,7 +76,22 @@
             </p>
 
             <div class="card content-card mt-4 p-4">
+<div class="row g-3 mb-4">
+    <div class="col-md-7">
+        <input type="search"
+               id="cooperativeSearch"
+               class="form-control"
+               placeholder="Search by cooperative name or location...">
+    </div>
 
+    <div class="col-md-5">
+        <select id="cooperativeStatus" class="form-select">
+            <option value="all">All cooperatives</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+</div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Cooperative List</h5>
 
@@ -87,7 +102,8 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table id="cooperativeTable"
+       class="table table-hover align-middle">
 
                         <thead class="table-light">
                         <tr>
@@ -133,5 +149,58 @@
         </main>
     </div>
 </div>
+<script>
+    const cooperativeSearch =
+        document.getElementById("cooperativeSearch");
+
+    const cooperativeStatus =
+        document.getElementById("cooperativeStatus");
+
+    const cooperativeTable =
+        document.getElementById("cooperativeTable");
+
+    function filterCooperatives() {
+        const searchTerm =
+            cooperativeSearch.value.toLowerCase().trim();
+
+        const selectedStatus = cooperativeStatus.value;
+
+        const rows =
+            cooperativeTable.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            // Skip the empty-state message.
+            if (row.cells.length < 5) {
+                return;
+            }
+
+            const name = row.cells[1].textContent.toLowerCase();
+            const location = row.cells[2].textContent.toLowerCase();
+
+            const status = row.cells[4].textContent
+                .trim()
+                .toLowerCase();
+
+            const searchMatches =
+                name.includes(searchTerm) ||
+                location.includes(searchTerm);
+
+            const statusMatches =
+                selectedStatus === "all" ||
+                status === selectedStatus;
+
+            row.style.display =
+                searchMatches && statusMatches ? "" : "none";
+        });
+    }
+
+    cooperativeSearch.addEventListener(
+        "input", filterCooperatives
+    );
+
+    cooperativeStatus.addEventListener(
+        "change", filterCooperatives
+    );
+</script>
 </body>
 </html>
