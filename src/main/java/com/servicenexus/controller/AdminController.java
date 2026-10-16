@@ -3,12 +3,12 @@ package com.servicenexus.controller;
 import java.util.Collections;
 import java.util.List;
 
-import com.servicenexus.cooperative.entity.Cooperative;
-import com.servicenexus.cooperative.service.CooperativeService;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.servicenexus.cooperative.entity.Cooperative;
+import com.servicenexus.cooperative.service.CooperativeService;
 
 @Controller
 public class AdminController {
@@ -59,6 +59,7 @@ public class AdminController {
         model.addAttribute("bookings", Collections.emptyList());
         model.addAttribute("bookingCount", 0);
 
+        
         return "admin-bookings";
     }
 
