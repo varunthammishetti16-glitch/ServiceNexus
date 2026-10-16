@@ -12,14 +12,19 @@
         <h1>Worker Dashboard</h1>
         <p>Manage your service listings on ServiceNexus.</p>
 
+        <p th:if="${success}" th:text="${success}"></p>
+        <p th:if="${error}" th:text="${error}"></p>
+
         <h2>Add a Service</h2>
 
         <form th:action="@{/worker/services}" method="post">
             <label for="name">Service Name</label>
-            <input type="text" id="name" name="name" required maxlength="100">
+            <input type="text" id="name" name="name"
+                   required maxlength="100">
 
             <label for="category">Category</label>
-            <input type="text" id="category" name="category" required maxlength="100">
+            <input type="text" id="category" name="category"
+                   required maxlength="100">
 
             <label for="description">Description</label>
             <textarea id="description" name="description"
@@ -45,19 +50,35 @@
         <div th:each="service : ${services}">
             <article>
                 <h3 th:text="${service.name}">Service Name</h3>
+
                 <p>
                     Category:
                     <span th:text="${service.category}">Category</span>
                 </p>
+
                 <p th:text="${service.description}">Description</p>
+
                 <p>
                     Price:
                     <span th:text="${service.price}">0.00</span>
                 </p>
+
                 <p>
                     Location:
                     <span th:text="${service.location}">Location</span>
                 </p>
+
+                <p>
+                    Status:
+                    <strong th:if="${service.active}">Active</strong>
+                    <strong th:unless="${service.active}">Inactive</strong>
+                </p>
+
+                <form th:if="${service.active}"
+                      th:action="@{/worker/services/{id}/deactivate(id=${service.id})}"
+                      method="post">
+                    <button type="submit">Deactivate Service</button>
+                </form>
             </article>
         </div>
     </main>

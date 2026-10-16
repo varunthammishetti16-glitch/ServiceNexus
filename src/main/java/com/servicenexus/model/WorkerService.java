@@ -39,6 +39,8 @@ public class WorkerService {
     @Size(max = 200)
     private String location;
 
+    private boolean active = true;
+
     public WorkerService() {
     }
 
@@ -84,5 +86,13 @@ public class WorkerService {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
