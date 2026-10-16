@@ -74,6 +74,14 @@
                     <strong th:unless="${service.active}">Inactive</strong>
                 </p>
 
+                <!-- Edit an active service -->
+                <form th:if="${service.active}"
+                      th:action="@{/worker/services/{id}/edit(id=${service.id})}"
+                      method="get">
+                    <button type="submit">Edit Service</button>
+                </form>
+
+                <!-- Deactivate an active service -->
                 <form th:if="${service.active}"
                       th:action="@{/worker/services/{id}/deactivate(id=${service.id})}"
                       method="post">
