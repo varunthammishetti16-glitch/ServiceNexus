@@ -76,21 +76,138 @@
             </p>
 
             <div class="card content-card mt-4 p-4">
+                <!-- Success and error messages -->
+<div th:if="${successMessage}"
+     class="alert alert-success"
+     th:text="${successMessage}">
+</div>
+
+<div th:if="${errorMessage}"
+     class="alert alert-danger"
+     th:text="${errorMessage}">
+</div>
+
+<!-- Add Cooperative Form -->
+<div class="mb-4">
+    <button class="btn btn-success"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#addCooperativeForm"
+            aria-expanded="false">
+        + Add Cooperative
+    </button>
+</div>
+
+<div class="collapse mb-4" id="addCooperativeForm">
+
+    <div class="border rounded p-4 bg-light">
+
+        <h5 class="mb-3">Register a New Cooperative</h5>
+
+        <form th:action="@{/admin/cooperatives}"
+              th:object="${cooperativeForm}"
+              method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Cooperative Name *</label>
+
+                <input type="text"
+                       th:field="*{name}"
+                       class="form-control"
+                       maxlength="120"
+                       required>
+
+                <div class="text-danger small"
+                     th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+
+                <textarea th:field="*{description}"
+                          class="form-control"
+                          rows="3"
+                          maxlength="1000"></textarea>
+
+                <div class="text-danger small"
+                     th:if="${#fields.hasErrors('description')}"
+                     th:errors="*{description}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Location *</label>
+
+                <input type="text"
+                       th:field="*{location}"
+                       class="form-control"
+                       maxlength="150"
+                       required>
+
+                <div class="text-danger small"
+                     th:if="${#fields.hasErrors('location')}"
+                     th:errors="*{location}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Services Offered</label>
+
+                <textarea th:field="*{servicesOffered}"
+                          class="form-control"
+                          rows="2"
+                          maxlength="500"></textarea>
+
+                <div class="text-danger small"
+                     th:if="${#fields.hasErrors('servicesOffered')}"
+                     th:errors="*{servicesOffered}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contact Email</label>
+
+                <input type="email"
+                       th:field="*{contactEmail}"
+                       class="form-control"
+                       maxlength="254">
+
+                <div class="text-danger small"
+                     th:if="${#fields.hasErrors('contactEmail')}"
+                     th:errors="*{contactEmail}">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Save Cooperative
+            </button>
+
+            <button type="reset" class="btn btn-secondary">
+                Clear Form
+            </button>
+
+        </form>
+
+    </div>
+</div>
 <div class="row g-3 mb-4">
-    <div class="col-md-7">
+
+    <div class="col-md-6">
         <input type="search"
                id="cooperativeSearch"
                class="form-control"
-               placeholder="Search by cooperative name or location...">
+               placeholder="Search by cooperative name...">
     </div>
 
-    <div class="col-md-5">
-        <select id="cooperativeStatus" class="form-select">
-            <option value="all">All cooperatives</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-        </select>
+    <div class="col-md-6">
+        <input type="search"
+               id="cooperativeLocation"
+               class="form-control"
+               placeholder="Filter by location...">
     </div>
+
 </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Cooperative List</h5>
@@ -101,48 +218,69 @@
                     </span>
                 </div>
 
-                <div class="table-responsive">
-                    <table id="cooperativeTable"
-       class="table table-hover align-middle">
+              <div class="table-responsive">
+    <table id="cooperativeTable"
+           class="table table-hover align-middle">
 
-                        <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Cooperative Name</th>
-                            <th>Location</th>
-                            <th>Members</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
+        <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Cooperative Name</th>
+            <th>Location</th>
+            <th>Services Offered</th>
+            <th>Contact Email</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
 
-                        <tbody>
-                        <tr th:if="${#lists.isEmpty(cooperatives)}">
-                            <td colspan="5"
-                                class="text-center text-secondary py-4">
-                                No cooperative records available yet.
-                            </td>
-                        </tr>
+        <tbody>
 
-                        <tr th:each="cooperative : ${cooperatives}">
-                            <td th:text="${cooperative.id}">1</td>
-                            <td th:text="${cooperative.name}">Cooperative Name</td>
-                            <td th:text="${cooperative.location}">Location</td>
-                            <td th:text="${cooperative.memberCount}">0</td>
-                            <td>
-                                <span class="badge text-bg-secondary"
-                                      th:text="${cooperative.status}">
-                                    Not available
-                                </span>
-                            </td>
-                        </tr>
-                        </tbody>
+        <tr th:if="${#lists.isEmpty(cooperatives)}">
+            <td colspan="6"
+                class="text-center text-secondary py-4">
+                No cooperative records available yet.
+            </td>
+        </tr>
 
-                    </table>
-                </div>
+        <tr th:each="cooperative : ${cooperatives}">
+            <td th:text="${cooperative.id}">1</td>
+
+            <td th:text="${cooperative.name}">
+                Cooperative Name
+            </td>
+
+            <td th:text="${cooperative.location}">
+                Location
+            </td>
+
+            <td th:text="${cooperative.servicesOffered}">
+                Services Offered
+            </td>
+
+            <td th:text="${cooperative.contactEmail}">
+                contact@example.com
+            </td>
+            <td>
+    <form th:action="@{/admin/cooperatives/{id}/delete(id=${cooperative.id})}"
+          method="post"
+          onsubmit="return confirm('Are you sure you want to delete this cooperative?');">
+
+        <button type="submit" class="btn btn-danger btn-sm">
+            Delete
+        </button>
+
+    </form>
+</td>
+        </tr>
+
+        </tbody>
+
+    </table>
+</div>
 
                 <p class="text-secondary small mb-0">
-                    Cooperative records will appear here after database integration.
-                </p>
+    Cooperative information is loaded from the ServiceNexus database.
+</p>
 
             </div>
 
@@ -153,54 +291,90 @@
     const cooperativeSearch =
         document.getElementById("cooperativeSearch");
 
-    const cooperativeStatus =
-        document.getElementById("cooperativeStatus");
+    const cooperativeLocation =
+        document.getElementById("cooperativeLocation");
 
     const cooperativeTable =
         document.getElementById("cooperativeTable");
 
     function filterCooperatives() {
         const searchTerm =
-            cooperativeSearch.value.toLowerCase().trim();
+            cooperativeSearch.value.trim().toLowerCase();
 
-        const selectedStatus = cooperativeStatus.value;
+        const locationTerm =
+            cooperativeLocation.value.trim().toLowerCase();
 
         const rows =
             cooperativeTable.querySelectorAll("tbody tr");
 
+        let visibleCount = 0;
+
         rows.forEach(row => {
-            // Skip the empty-state message.
+
+            // Skip the empty-state row.
             if (row.cells.length < 5) {
                 return;
             }
 
-            const name = row.cells[1].textContent.toLowerCase();
-            const location = row.cells[2].textContent.toLowerCase();
+            const name =
+                row.cells[1].textContent.toLowerCase();
 
-            const status = row.cells[4].textContent
-                .trim()
-                .toLowerCase();
+            const location =
+                row.cells[2].textContent.toLowerCase();
 
-            const searchMatches =
-                name.includes(searchTerm) ||
-                location.includes(searchTerm);
+            const matchesName =
+                name.includes(searchTerm);
 
-            const statusMatches =
-                selectedStatus === "all" ||
-                status === selectedStatus;
+            const matchesLocation =
+                location.includes(locationTerm);
 
-            row.style.display =
-                searchMatches && statusMatches ? "" : "none";
+            const visible =
+                matchesName && matchesLocation;
+
+            row.style.display = visible ? "" : "none";
+
+            if (visible) {
+                visibleCount++;
+            }
         });
+
+        updateEmptyMessage(rows, visibleCount);
+    }
+
+    function updateEmptyMessage(rows, visibleCount) {
+        let message =
+            document.getElementById("noMatchingCooperatives");
+
+        if (!message) {
+            message = document.createElement("tr");
+            message.id = "noMatchingCooperatives";
+
+            message.innerHTML = `
+               <td colspan="6"
+                    class="text-center text-secondary py-4">
+                    No cooperatives match your search.
+                </td>
+            `;
+
+            cooperativeTable
+                .querySelector("tbody")
+                .appendChild(message);
+        }
+
+        message.style.display =
+            visibleCount === 0 ? "" : "none";
     }
 
     cooperativeSearch.addEventListener(
-        "input", filterCooperatives
+        "input",
+        filterCooperatives
     );
 
-    cooperativeStatus.addEventListener(
-        "change", filterCooperatives
+    cooperativeLocation.addEventListener(
+        "input",
+        filterCooperatives
     );
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

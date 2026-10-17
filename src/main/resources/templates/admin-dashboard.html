@@ -121,6 +121,61 @@
                     activities from one place.
                 </p>
             </div>
+            <!-- Recently Registered Cooperatives -->
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body">
+
+        <h5 class="mb-3">Recently Registered Cooperatives</h5>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cooperative Name</th>
+                        <th>Location</th>
+                        <th>Contact Email</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:if="${#lists.isEmpty(recentCooperatives)}">
+                        <td colspan="4"
+                            class="text-center text-secondary py-3">
+                            No cooperatives registered yet.
+                        </td>
+                    </tr>
+
+                    <tr th:each="cooperative : ${recentCooperatives}">
+                        <td th:text="${cooperative.id}">1</td>
+
+                        <td th:text="${cooperative.name}">
+                            Cooperative Name
+                        </td>
+
+                        <td th:text="${cooperative.location}">
+                            Location
+                        </td>
+
+                        <td th:text="${cooperative.contactEmail}">
+                            contact@example.com
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+        <a th:href="@{/admin/cooperatives}"
+           class="btn btn-outline-success btn-sm">
+            Manage Cooperatives
+        </a>
+
+    </div>
+</div>
 
         </main>
     </div>

@@ -1,16 +1,18 @@
 
 package com.servicenexus.cooperative.service;
 
-import com.servicenexus.cooperative.dto.CreateCooperativeRequest;
-import com.servicenexus.cooperative.entity.Cooperative;
-import com.servicenexus.cooperative.repository.CooperativeRepository;
+import java.util.List;
+
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import com.servicenexus.cooperative.dto.CreateCooperativeRequest;
+import com.servicenexus.cooperative.entity.Cooperative;
+import com.servicenexus.cooperative.repository.CooperativeRepository;
 
 @Service
 public class CooperativeService {
@@ -54,4 +56,28 @@ public class CooperativeService {
             );
         }
     }
+    @Transactional
+public void deleteById(Long id) {
+    if (!repository.existsById(id)) {
+        throw new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Cooperative not found"
+        );
+    }
+
+    repository.deleteById(id);
+}
+@Transactional(readOnly = true)
+public List<Cooperative> findRecent(int limit) {
+    if (limit < 1) {
+        throw new IllegalArgumentException("Limit must be positive");
+    }
+
+    return repository.findAll(
+            PageRequest.of(0, limit,
+                    org.springframework.data.domain.Sort
+                            .by(org.springframework.data.domain.Sort.Direction.DESC,
+                                    "createdAt"))
+    ).getContent();
+}
 }

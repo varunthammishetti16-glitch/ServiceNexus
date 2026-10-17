@@ -76,30 +76,30 @@
             </p>
 
             <div class="card content-card mt-4 p-4">
-            <div class="row g-3 mb-4">
-    <div class="col-md-8">
+           <div class="row g-3 mb-4">
+
+    <div class="col-md-6">
         <input type="search"
                id="workerSearch"
                class="form-control"
-               placeholder="Search workers by name or skill...">
+               placeholder="Search by worker name or skill...">
     </div>
 
-    <div class="col-md-4">
-        <select id="workerAvailability"
-                class="form-select">
-            <option value="all">All workers</option>
-            <option value="available">Available</option>
-            <option value="unavailable">Unavailable</option>
-        </select>
+    <div class="col-md-6">
+        <input type="search"
+               id="workerLocation"
+               class="form-control"
+               placeholder="Filter by location...">
     </div>
+
+</div>
 </div>
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Worker List</h5>
-
-                    <span class="badge text-bg-success"
-                          th:text="${workerCount} + ' Workers'">
-                        0 Workers
-                    </span>
+                 <span class="badge text-bg-success"
+      th:text="${workerCount} + ' Registered Workers'">
+    0 Registered Workers
+</span>
                 </div>
 
                 <div class="table-responsive">
@@ -108,11 +108,11 @@
 
                         <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Skill</th>
-                            <th>Availability</th>
-                        </tr>
+        <th>ID</th>
+        <th>Worker Name</th>
+        <th>Skills</th>
+        <th>Location</th>
+    </tr>
                         </thead>
 
                         <tbody>
@@ -122,12 +122,12 @@
                             </td>
                         </tr>
 
-                        <tr th:each="worker : ${workers}">
-                            <td th:text="${worker.id}">1</td>
-                            <td th:text="${worker.name}">Worker Name</td>
-                            <td th:text="${worker.skill}">General Services</td>
-                            <td th:text="${worker.availability}">Not available</td>
-                        </tr>
+                       <tr th:each="worker : ${workers}">
+    <td th:text="${worker.id}">1</td>
+    <td th:text="${worker.name}">Worker Name</td>
+    <td th:text="${worker.skills}">General Services</td>
+    <td th:text="${worker.location}">Worker Location</td>
+</tr>
                         </tbody>
 
                     </table>
@@ -144,41 +144,66 @@
 </div>
 <script>
     const workerSearch = document.getElementById("workerSearch");
-    const availabilityFilter =
-        document.getElementById("workerAvailability");
+    const workerLocation = document.getElementById("workerLocation");
     const workerTable = document.getElementById("workerTable");
 
     function filterWorkers() {
-        const searchTerm = workerSearch.value.toLowerCase();
-        const selectedAvailability = availabilityFilter.value;
+        const searchTerm = workerSearch.value.trim().toLowerCase();
+        const locationTerm = workerLocation.value.trim().toLowerCase();
 
         const rows = workerTable.querySelectorAll("tbody tr");
+        let visibleCount = 0;
 
         rows.forEach(row => {
+            // Skip the "No worker records" message.
             if (row.cells.length < 4) {
                 return;
             }
 
             const name = row.cells[1].textContent.toLowerCase();
-            const skill = row.cells[2].textContent.toLowerCase();
-            const availability =
-                row.cells[3].textContent.trim().toLowerCase();
+            const skills = row.cells[2].textContent.toLowerCase();
+            const location = row.cells[3].textContent.toLowerCase();
 
-            const searchMatches =
+            const matchesSearch =
                 name.includes(searchTerm) ||
-                skill.includes(searchTerm);
+                skills.includes(searchTerm);
 
-            const availabilityMatches =
-                selectedAvailability === "all" ||
-                availability === selectedAvailability;
+            const matchesLocation =
+                location.includes(locationTerm);
 
-            row.style.display =
-                searchMatches && availabilityMatches ? "" : "none";
+            const isVisible = matchesSearch && matchesLocation;
+
+            row.style.display = isVisible ? "" : "none";
+
+            if (isVisible) {
+                visibleCount++;
+            }
         });
+
+        updateEmptyMessage(rows, visibleCount);
+    }
+
+    function updateEmptyMessage(rows, visibleCount) {
+        let message = document.getElementById("noMatchingWorkers");
+
+        if (!message) {
+            message = document.createElement("tr");
+            message.id = "noMatchingWorkers";
+
+            message.innerHTML = `
+                <td colspan="4" class="text-center text-secondary py-4">
+                    No workers match your search.
+                </td>
+            `;
+
+            workerTable.querySelector("tbody").appendChild(message);
+        }
+
+        message.style.display = visibleCount === 0 ? "" : "none";
     }
 
     workerSearch.addEventListener("input", filterWorkers);
-    availabilityFilter.addEventListener("change", filterWorkers);
+    workerLocation.addEventListener("input", filterWorkers);
 </script>
 </body>
 </html>
