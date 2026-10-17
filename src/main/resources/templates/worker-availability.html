@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Availability - ServiceNexus</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 30px;
+            color: #243047;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1, h2 {
+            color: #173b70;
+        }
+
+        label {
+            display: block;
+            margin: 14px 0 6px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            border: 1px solid #ccd3df;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .checkbox-row input {
+            width: auto;
+        }
+
+        button {
+            background: #1769aa;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #104d80;
+        }
+
+        .success {
+            background: #e1f7e8;
+            color: #176b35;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .error {
+            color: #c62828;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e7ef;
+        }
+
+        th {
+            background: #edf3fa;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1769aa;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 16px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back-link" th:href="@{/worker}">
+        &larr; Back to Worker Dashboard
+    </a>
+
+    <h1>My Availability</h1>
+    <p>Set your weekly working days and hours.</p>
+
+    <div class="card">
+        <h2>Add Availability</h2>
+
+        <p class="success"
+           th:if="${successMessage}"
+           th:text="${successMessage}"></p>
+
+        <form th:action="@{/worker/availability}"
+              th:object="${availability}"
+              method="post">
+
+            <label for="dayOfWeek">Day of the week</label>
+            <select id="dayOfWeek" th:field="*{dayOfWeek}" required>
+                <option value="">Select a day</option>
+                <option th:each="day : ${days}"
+                        th:value="${day}"
+                        th:text="${day}">
+                </option>
+            </select>
+            <p class="error"
+               th:if="${#fields.hasErrors('dayOfWeek')}"
+               th:errors="*{dayOfWeek}"></p>
+
+            <label for="startTime">Start time</label>
+            <input id="startTime"
+                   type="time"
+                   th:field="*{startTime}"
+                   required>
+            <p class="error"
+               th:if="${#fields.hasErrors('startTime')}"
+               th:errors="*{startTime}"></p>
+
+            <label for="endTime">End time</label>
+            <input id="endTime"
+                   type="time"
+                   th:field="*{endTime}"
+                   required>
+            <p class="error"
+               th:if="${#fields.hasErrors('endTime')}"
+               th:errors="*{endTime}"></p>
+
+            <div class="checkbox-row">
+                <input id="available"
+                       type="checkbox"
+                       th:field="*{available}">
+                <label for="available" style="margin: 0;">
+                    Available during these hours
+                </label>
+            </div>
+
+            <button type="submit">Save Availability</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>My Weekly Schedule</h2>
+
+        <p th:if="${#lists.isEmpty(availabilityList)}">
+            No availability has been added yet.
+        </p>
+
+        <table th:unless="${#lists.isEmpty(availabilityList)}">
+            <thead>
+            <tr>
+                <th>Day</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="slot : ${availabilityList}">
+                <td th:text="${slot.dayOfWeek}"></td>
+                <td th:text="${slot.startTime}"></td>
+                <td th:text="${slot.endTime}"></td>
+                <td th:text="${slot.available ? 'Available' : 'Unavailable'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
