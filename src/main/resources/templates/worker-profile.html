@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Worker Profile - ServiceNexus</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+<main>
+    <h1>Worker Profile</h1>
+
+    <p>Create and manage your worker profile on ServiceNexus.</p>
+
+    <!-- Success and error messages -->
+    <p th:if="${success}"
+       th:text="${success}"
+       role="status">
+    </p>
+
+    <p th:if="${error}"
+       th:text="${error}"
+       role="alert">
+    </p>
+
+    <!-- Worker profile form -->
+    <h2>Profile Details</h2>
+
+    <form th:action="@{/worker/profile}"
+          th:object="${profile}"
+          method="post">
+
+        <label for="name">Full Name</label>
+        <input type="text"
+               id="name"
+               th:field="*{name}"
+               maxlength="100"
+               required>
+
+        <label for="phone">Phone Number</label>
+        <input type="tel"
+               id="phone"
+               th:field="*{phone}"
+               maxlength="20"
+               required>
+
+        <label for="skills">Skills</label>
+        <input type="text"
+               id="skills"
+               th:field="*{skills}"
+               maxlength="100"
+               required>
+
+        <label for="location">Location</label>
+        <input type="text"
+               id="location"
+               th:field="*{location}"
+               maxlength="200"
+               required>
+
+        <label for="description">About You</label>
+        <textarea id="description"
+                  th:field="*{description}"
+                  maxlength="1000"></textarea>
+
+        <button type="submit">Save Profile</button>
+    </form>
+
+    <!-- Display the saved worker profile -->
+    <hr>
+
+    <h2>Your Saved Worker Profile</h2>
+
+    <div th:if="${profile.id != null}">
+        <p>
+            <strong>Full Name:</strong>
+            <span th:text="${profile.name}"></span>
+        </p>
+
+        <p>
+            <strong>Phone Number:</strong>
+            <span th:text="${profile.phone}"></span>
+        </p>
+
+        <p>
+            <strong>Skills:</strong>
+            <span th:text="${profile.skills}"></span>
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            <span th:text="${profile.location}"></span>
+        </p>
+
+        <p>
+            <strong>About You:</strong>
+            <span th:text="${profile.description}"></span>
+        </p>
+    </div>
+
+    <p th:if="${profile.id == null}">
+        No worker profile has been saved yet.
+    </p>
+
+    <!-- Navigation -->
+    <p>
+        <a th:href="@{/worker}">Back to Worker Dashboard</a>
+    </p>
+
+</main>
+</body>
+</html>
