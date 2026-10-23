@@ -1,10 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Service Search | ServiceNexus</title>
 
     <link
@@ -12,41 +12,104 @@
         rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-light">
 
 <div class="container py-5">
 
     <a href="/" class="btn btn-outline-success mb-4">
-        ← Back to Home
+        Back to Home
     </a>
 
     <h1>Find Local Services</h1>
+    <p class="text-muted">Search for services available in your area.</p>
 
-    <p class="text-muted">
-        Your ServiceNexus search details
-    </p>
+    <!-- Search Form -->
+    <form action="/services" method="get"
+          class="card p-4 mt-4 mb-4">
 
-    <div class="card p-4 mt-4">
+        <div class="mb-3">
+            <label for="q" class="form-label">
+                Service or Category
+            </label>
+            <input
+                type="text"
+                id="q"
+                name="q"
+                class="form-control"
+                placeholder="e.g. Cleaning or Plumbing"
+                th:value="${query}">
+        </div>
 
-        <h4>Search Details</h4>
+        <div class="mb-3">
+            <label for="location" class="form-label">
+                Location
+            </label>
+            <input
+                type="text"
+                id="location"
+                name="location"
+                class="form-control"
+                placeholder="e.g. Hyderabad"
+                th:value="${location}">
+        </div>
 
-        <p>
-            Service:
-            <strong th:text="${query != null and !query.isBlank()
-                ? query : 'All services'}"></strong>
-        </p>
+        <button type="submit" class="btn btn-success">
+            Search Services
+        </button>
+    </form>
 
-        <p>
-            Location:
-            <strong th:text="${location != null and !location.isBlank()
-                ? location : 'All locations'}"></strong>
-        </p>
+    <!-- Search Results -->
+    <h3 class="mb-3">Available Services</h3>
 
+    <div
+        th:if="${#lists.isEmpty(services)}"
+        class="alert alert-info">
+        No active services found. Try a different search or add an
+        active service through the worker dashboard.
     </div>
 
-    <div class="alert alert-info mt-4">
-        Search received successfully! We'll connect this search to
-        the MySQL services database in the next stage.
+    <div class="row g-4">
+
+        <div
+            class="col-md-6 col-lg-4"
+            th:each="service : ${services}">
+
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+
+                    <h5
+                        class="card-title"
+                        th:text="${service.name}">
+                        Service Name
+                    </h5>
+
+                    <span
+                        class="badge bg-success mb-2"
+                        th:text="${service.category}">
+                        Category
+                    </span>
+
+                    <p
+                        class="card-text"
+                        th:text="${service.description}">
+                        Service description
+                    </p>
+
+                    <p class="mb-1">
+                        <strong>Location:</strong>
+                        <span th:text="${service.location}"></span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Price:</strong>
+                        ₹<span th:text="${service.price}"></span>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
 </div>
