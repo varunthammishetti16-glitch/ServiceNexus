@@ -68,66 +68,84 @@ public class CustomerService {
         }
     }
     
-    @Transactional(readOnly = true)
-    public CustomerRegistrationResponse getCustomerProfile(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer not found"
-                ));
 
-        return new CustomerRegistrationResponse(
-                customer.getId(),
-                customer.getName(),
-                customer.getEmail(),
-                customer.getPhone(),
-                customer.getAddress(),
-                customer.getCreatedAt()
-        );
-    }
-    
-    @Transactional
-    public CustomerRegistrationResponse updateCustomerProfile(
-            Long id,
-            CustomerProfileUpdateRequest request) {
+@Transactional(readOnly = true)
+public CustomerRegistrationResponse getCustomerProfile(
+        Long id,
+        String authenticatedEmail) {
 
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Customer not found"
-                ));
+    Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Customer not found"
+            ));
 
-        String email = request.email().trim().toLowerCase();
-
-        boolean emailUsedByAnotherCustomer =
-                customerRepository.findByEmailIgnoreCase(email)
-                        .filter(existing -> !existing.getId().equals(id))
-                        .isPresent();
-
-        if (emailUsedByAnotherCustomer) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "An account with this email already exists"
-            );
-        }
-
-        customer.setName(request.name().trim());
-        customer.setEmail(email);
-        customer.setPhone(normalizeOptional(request.phone()));
-        customer.setAddress(normalizeOptional(request.address()));
-
-        Customer saved = customerRepository.save(customer);
-
-        return new CustomerRegistrationResponse(
-                saved.getId(),
-                saved.getName(),
-                saved.getEmail(),
-                saved.getPhone(),
-                saved.getAddress(),
-                saved.getCreatedAt()
+    if (!customer.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "You cannot access another customer's profile"
         );
     }
 
+    return new CustomerRegistrationResponse(
+            customer.getId(),
+            customer.getName(),
+            customer.getEmail(),
+            customer.getPhone(),
+            customer.getAddress(),
+            customer.getCreatedAt()
+    );
+}
+
+@Transactional
+public CustomerRegistrationResponse updateCustomerProfile(
+        Long id,
+        CustomerProfileUpdateRequest request,
+        String authenticatedEmail) {
+
+    Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Customer not found"
+            ));
+
+    if (!customer.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+        throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "You cannot update another customer's profile"
+        );
+    }
+
+    String email = request.email().trim().toLowerCase();
+
+    boolean emailUsedByAnotherCustomer =
+            customerRepository.findByEmailIgnoreCase(email)
+                    .filter(existing -> !existing.getId().equals(id))
+                    .isPresent();
+
+    if (emailUsedByAnotherCustomer) {
+        throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "An account with this email already exists"
+        );
+    }
+
+    customer.setName(request.name().trim());
+    customer.setEmail(email);
+    customer.setPhone(normalizeOptional(request.phone()));
+    customer.setAddress(normalizeOptional(request.address()));
+
+    Customer saved = customerRepository.save(customer);
+
+    return new CustomerRegistrationResponse(
+            saved.getId(),
+            saved.getName(),
+            saved.getEmail(),
+            saved.getPhone(),
+            saved.getAddress(),
+            saved.getCreatedAt()
+    );
+}
     private String normalizeOptional(String value) {
         if (value == null || value.isBlank()) {
             return null;
