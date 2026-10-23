@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Cooperatives | ServiceNexus</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
@@ -110,13 +112,19 @@
     const saveButton = document.getElementById("saveButton");
 
     async function readError(response) {
+        const responseBody = await response.text();
+
         try {
-            const body = await response.json();
-            return body.detail || body.message || body.title ||
-                   "Request failed. Please check your input.";
+            const body = JSON.parse(responseBody);
+            const message = body.detail || body.message || body.title ||
+                            body.error;
+            if (message) return message;
         } catch {
-            return "Request failed with status " + response.status;
+            // Non-JSON responses are reported by their HTTP status below.
         }
+
+        return "Request failed (HTTP " + response.status + " " +
+               response.statusText + ").";
     }
 
     function addTextElement(parent, tag, text, className) {
