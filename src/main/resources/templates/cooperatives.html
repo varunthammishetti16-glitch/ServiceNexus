@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>Cooperatives | ServiceNexus</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .coop-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .coop-panel {
+            background: white;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #00000010;
+        }
+        .coop-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .coop-form input, .coop-form textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-sizing: border-box;
+        }
+        .coop-form textarea { min-height: 90px; }
+        .coop-form .full-width { grid-column: 1 / -1; }
+        .coop-button {
+            background: #176b52;
+            color: white;
+            border: 0;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        .coop-card {
+            border: 1px solid #e3e8e5;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 12px 0;
+        }
+        .coop-message { margin: 12px 0; }
+        .coop-error { color: #b42318; }
+        .coop-success { color: #176b52; }
+        @media (max-width: 600px) {
+            .coop-form { grid-template-columns: 1fr; }
+            .coop-form .full-width { grid-column: auto; }
+        }
+    </style>
+</head>
+<body>
+<nav style="padding:18px 5%; background:white;">
+    <a th:href="@{/}">← Back to Home</a>
+</nav>
+
+<main class="coop-container">
+    <h1>Worker Cooperatives</h1>
+    <p>Discover local cooperatives and register a new cooperative.</p>
+
+    <section class="coop-panel">
+        <h2>Register a Cooperative</h2>
+
+        <form id="cooperativeForm" class="coop-form">
+            <input name="name" placeholder="Cooperative name" maxlength="120"
+                   required>
+            <input name="location" placeholder="Location" maxlength="150"
+                   required>
+            <input name="contactEmail" type="email" placeholder="Contact email"
+                   maxlength="254">
+            <input name="servicesOffered"
+                   placeholder="Services offered" maxlength="500">
+            <textarea name="description" class="full-width"
+                      placeholder="Description" maxlength="1000"></textarea>
+
+            <div class="full-width">
+                <button class="coop-button" id="saveButton" type="submit">
+                    Create Cooperative
+                </button>
+            </div>
+        </form>
+
+        <p id="formMessage" class="coop-message" role="status"
+           aria-live="polite"></p>
+    </section>
+
+    <section class="coop-panel">
+        <h2>Registered Cooperatives</h2>
+        <button type="button" id="refreshButton" class="coop-button">
+            Refresh List
+        </button>
+        <p id="listMessage" class="coop-message" role="status"
+           aria-live="polite"></p>
+        <div id="cooperativeList"></div>
+    </section>
+</main>
+
+<script>
+    const form = document.getElementById("cooperativeForm");
+    const formMessage = document.getElementById("formMessage");
+    const listMessage = document.getElementById("listMessage");
+    const cooperativeList = document.getElementById("cooperativeList");
+    const saveButton = document.getElementById("saveButton");
+
+    async function readError(response) {
+        const responseBody = await response.text();
+
+        try {
+            const body = JSON.parse(responseBody);
+            const message = body.detail || body.message || body.title ||
+                            body.error;
+            if (message) return message;
+        } catch {
+            // Non-JSON responses are reported by their HTTP status below.
+        }
+
+        return "Request failed (HTTP " + response.status + " " +
+               response.statusText + ").";
+    }
+
+    function addTextElement(parent, tag, text, className) {
+        const element = document.createElement(tag);
+        element.textContent = text ?? "";
+        if (className) element.className = className;
+        parent.appendChild(element);
+        return element;
+    }
+
+    async function loadCooperatives() {
+        listMessage.textContent = "Loading cooperatives...";
+        cooperativeList.replaceChildren();
+
+        try {
+            const response = await fetch("/api/cooperatives");
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            const cooperatives = await response.json();
+
+            if (!Array.isArray(cooperatives)) {
+                throw new Error("Unexpected response from the server.");
+            }
+
+            if (cooperatives.length === 0) {
+                listMessage.textContent =
+                    "No cooperatives registered yet. You can create one above.";
+                return;
+            }
+
+            listMessage.textContent =
+                cooperatives.length + " cooperative(s) found.";
+
+            cooperatives.forEach(coop => {
+                const card = document.createElement("article");
+                card.className = "coop-card";
+
+                addTextElement(card, "h3", coop.name);
+                addTextElement(card, "p",
+                    "Location: " + (coop.location || "Not provided"));
+                addTextElement(card, "p",
+                    "Services: " + (coop.servicesOffered || "Not provided"));
+                addTextElement(card, "p",
+                    "Description: " + (coop.description || "Not provided"));
+                addTextElement(card, "p",
+                    "Contact: " + (coop.contactEmail || "Not provided"));
+
+                if (coop.id != null) {
+                    addTextElement(card, "small",
+                        "Cooperative ID: " + coop.id);
+                }
+
+                cooperativeList.appendChild(card);
+            });
+        } catch (error) {
+            listMessage.textContent =
+                "Could not load cooperatives: " + error.message;
+            listMessage.className = "coop-message coop-error";
+        }
+    }
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        formMessage.textContent = "";
+        formMessage.className = "coop-message";
+        saveButton.disabled = true;
+
+        const values = new FormData(form);
+        const payload = {
+            name: values.get("name").trim(),
+            location: values.get("location").trim(),
+            contactEmail: values.get("contactEmail").trim(),
+            servicesOffered: values.get("servicesOffered").trim(),
+            description: values.get("description").trim()
+        };
+
+        try {
+            const headers = { "Content-Type": "application/json" };
+
+            // Send a CSRF token if Spring Security has enabled CSRF protection.
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            const csrfHeader = document.querySelector(
+                'meta[name="_csrf_header"]'
+            );
+
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader.content] = csrfToken.content;
+            }
+
+            const response = await fetch("/api/cooperatives", {
+                method: "POST",
+                headers,
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            const created = await response.json();
+
+            formMessage.textContent =
+                "Cooperative '" + created.name + "' saved successfully.";
+            formMessage.className = "coop-message coop-success";
+            form.reset();
+
+            await loadCooperatives();
+        } catch (error) {
+            formMessage.textContent = error.message;
+            formMessage.className = "coop-message coop-error";
+        } finally {
+            saveButton.disabled = false;
+        }
+    });
+
+    document.getElementById("refreshButton")
+        .addEventListener("click", loadCooperatives);
+
+    loadCooperatives();
+</script>
+</body>
+</html>
