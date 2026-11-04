@@ -1,0 +1,392 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooperative Members | ServiceNexus</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f7fb;
+            color: #243047;
+        }
+
+        header {
+            background: #173b65;
+            color: white;
+            padding: 24px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 12px #00000012;
+        }
+
+        label {
+            display: block;
+            margin: 14px 0 6px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            box-sizing: border-box;
+            padding: 11px;
+            width: 100%;
+            border: 1px solid #ccd5e0;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 18px;
+            background: #1769aa;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #12558a;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e3e8ef;
+        }
+
+        th {
+            background: #edf3f9;
+        }
+
+        .note {
+            color: #5c6678;
+        }
+
+        .message {
+            margin: 12px 0;
+            font-weight: 500;
+        }
+
+        .error {
+            color: #b42318;
+        }
+
+        .success {
+            color: #18723a;
+        }
+
+        .secondary-button {
+            background: #52677e;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Cooperative Members</h1>
+    <p>Manage worker membership in ServiceNexus cooperatives.</p>
+</header>
+
+<main>
+    <section class="panel">
+        <h2>Add a Cooperative Member</h2>
+        <p class="note">
+            Add a worker to an existing cooperative using their IDs.
+        </p>
+
+        <form id="memberForm">
+            <label for="cooperativeId">Cooperative ID</label>
+            <input
+                id="cooperativeId"
+                type="number"
+                min="1"
+                required
+                placeholder="Enter an existing cooperative ID">
+
+            <label for="workerId">Worker ID</label>
+            <input
+                id="workerId"
+                type="number"
+                min="1"
+                required
+                placeholder="Enter worker ID">
+
+            <label for="role">Membership Role</label>
+            <select id="role" required>
+                <option value="MEMBER">Member</option>
+                <option value="COORDINATOR">Coordinator</option>
+            </select>
+
+            <button id="addButton" type="submit">Add Member</button>
+        </form>
+
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+        <h2>Cooperative Membership Records</h2>
+        <p class="note">
+            Enter a cooperative ID below to retrieve saved membership records.
+        </p>
+
+        <label for="searchCooperativeId">Cooperative ID</label>
+        <input
+            id="searchCooperativeId"
+            type="number"
+            min="1"
+            placeholder="Enter cooperative ID">
+
+        <button id="loadButton" type="button">Load Members</button>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member ID</th>
+                        <th>Cooperative ID</th>
+                        <th>Worker ID</th>
+                        <th>Role</th>
+                        <th>Joined At</th>
+                    </tr>
+                </thead>
+
+                <tbody id="memberRows">
+                    <tr>
+                        <td colspan="5">Load a cooperative to view its members.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <p>
+        <a th:href="@{/cooperative-dashboard}">
+            ← Back to Dashboard
+        </a>
+    </p>
+</main>
+
+<script>
+    const form = document.getElementById("memberForm");
+    const rows = document.getElementById("memberRows");
+    const message = document.getElementById("message");
+    const addButton = document.getElementById("addButton");
+    const loadButton = document.getElementById("loadButton");
+
+    const csrfToken =
+        document.querySelector('meta[name="_csrf"]')?.content;
+
+    const csrfHeader =
+        document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    function showMessage(text, type = "") {
+        message.textContent = text;
+        message.className = "message " + type;
+    }
+
+    function showTableMessage(text) {
+        rows.replaceChildren();
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = 5;
+        cell.textContent = text;
+
+        row.appendChild(cell);
+        rows.appendChild(row);
+    }
+
+    function appendMemberRow(member) {
+        const row = document.createElement("tr");
+
+        const values = [
+            member.id,
+            member.cooperativeId,
+            member.workerId,
+            member.role,
+            member.joinedAt
+                ? new Date(member.joinedAt).toLocaleString()
+                : ""
+        ];
+
+        values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+        });
+
+        rows.appendChild(row);
+    }
+
+    async function loadMembers(cooperativeId) {
+        if (!cooperativeId || Number(cooperativeId) <= 0) {
+            showMessage("Enter a valid cooperative ID.", "error");
+            return;
+        }
+
+        showTableMessage("Loading members...");
+        loadButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                `/api/cooperative-members?cooperativeId=${encodeURIComponent(cooperativeId)}`
+            );
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error("Cooperative not found.");
+                }
+
+                throw new Error(
+                    "Unable to load members. Check the application and database."
+                );
+            }
+
+            const members = await response.json();
+            rows.replaceChildren();
+
+            if (members.length === 0) {
+                showTableMessage("No members found for this cooperative.");
+            } else {
+                members.forEach(appendMemberRow);
+            }
+
+            showMessage(
+                `Loaded ${members.length} member(s).`,
+                "success"
+            );
+        } catch (error) {
+            showTableMessage("Membership records could not be loaded.");
+            showMessage(error.message, "error");
+        } finally {
+            loadButton.disabled = false;
+        }
+    }
+
+    loadButton.addEventListener("click", function () {
+        const cooperativeId =
+            document.getElementById("searchCooperativeId").value;
+
+        loadMembers(cooperativeId);
+    });
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const cooperativeId = Number(
+            document.getElementById("cooperativeId").value
+        );
+
+        const workerId = Number(
+            document.getElementById("workerId").value
+        );
+
+        const role = document.getElementById("role").value;
+
+        if (!Number.isInteger(cooperativeId) || cooperativeId <= 0 ||
+            !Number.isInteger(workerId) || workerId <= 0) {
+            showMessage(
+                "Cooperative ID and Worker ID must be positive whole numbers.",
+                "error"
+            );
+            return;
+        }
+
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        addButton.disabled = true;
+        showMessage("Saving membership...");
+
+        try {
+            const response = await fetch("/api/cooperative-members", {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({
+                    cooperativeId: cooperativeId,
+                    workerId: workerId,
+                    role: role
+                })
+            });
+
+            if (!response.ok) {
+                if (response.status === 409) {
+                    throw new Error(
+                        "This worker is already a member of this cooperative."
+                    );
+                }
+
+                if (response.status === 403) {
+                    throw new Error(
+                        "Request rejected by security protection. Check CSRF configuration."
+                    );
+                }
+
+                if (response.status === 404) {
+                    throw new Error("Cooperative not found.");
+                }
+
+                if (response.status === 400) {
+                    throw new Error(
+                        "Invalid membership details. Check the IDs and role."
+                    );
+                }
+
+                throw new Error(
+                    "Unable to save membership. Check the application logs."
+                );
+            }
+
+            await response.json();
+
+            document.getElementById("searchCooperativeId").value =
+                String(cooperativeId);
+
+            form.reset();
+
+            showMessage("Member added successfully.", "success");
+
+            await loadMembers(cooperativeId);
+        } catch (error) {
+            showMessage(error.message, "error");
+        } finally {
+            addButton.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
+```

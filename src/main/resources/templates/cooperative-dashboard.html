@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooperative Dashboard | ServiceNexus</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f7fb; color: #243047; }
+        header { background: #173b65; color: white; padding: 24px; }
+        main { max-width: 1000px; margin: 30px auto; padding: 20px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }
+        .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 3px 12px #00000012; }
+        .card a { color: #1769aa; font-weight: bold; }
+        .note { color: #5c6678; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>ServiceNexus Cooperative Dashboard</h1>
+    <p>Manage cooperatives, members, community bookings and work allocation.</p>
+</header>
+
+<main>
+    <h2>Cooperative Management</h2>
+    <p class="note">Choose a section to continue.</p>
+
+    <section class="cards">
+        <article class="card">
+            <h3>Cooperatives</h3>
+            <p>Create and view cooperative profiles.</p>
+            <a th:href="@{/cooperatives}">Manage Cooperatives →</a>
+        </article>
+
+        <article class="card">
+            <h3>Members</h3>
+            <p>Manage worker membership in cooperatives.</p>
+            <a th:href="@{/cooperative-members}">Manage Members →</a>
+        </article>
+
+        <article class="card">
+            <h3>Community Bookings</h3>
+            <p>Organize service requests for communities.</p>
+            <a th:href="@{/community-bookings}">View Bookings →</a>
+        </article>
+
+        <article class="card">
+            <h3>Work Allocation</h3>
+            <p>Assign jobs and review workload distribution.</p>
+            <a th:href="@{/work-allocation}">Allocate Work →</a>
+        </article>
+    </section>
+
+    <p style="margin-top: 28px">
+        <a th:href="@{/}">← Back to Home</a>
+    </p>
+</main>
+</body>
+</html>

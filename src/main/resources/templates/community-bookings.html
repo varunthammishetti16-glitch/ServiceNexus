@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Bookings | ServiceNexus</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f7fb; color: #243047; }
+        header { background: #173b65; color: white; padding: 24px; }
+        main { max-width: 900px; margin: 30px auto; padding: 20px; }
+        .panel { background: white; padding: 24px; border-radius: 12px; margin-bottom: 24px; }
+        label { display: block; margin: 14px 0 6px; font-weight: bold; }
+        input, select, textarea, button { box-sizing: border-box; width: 100%; padding: 11px; border: 1px solid #ccd5e0; border-radius: 6px; font: inherit; }
+        button { margin-top: 18px; background: #1769aa; color: white; border: none; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e3e8ef; }
+        th { background: #edf3f9; }
+        .note { color: #5c6678; }
+        .table-wrap { overflow-x: auto; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Community Bookings</h1>
+    <p>Organize service requests for apartments and local communities.</p>
+</header>
+
+<main>
+    <section class="panel">
+        <h2>Create a Community Request</h2>
+        <p class="note">Prototype only: requests below are not saved to the server.</p>
+
+        <form id="bookingForm">
+            <label for="community">Community / Apartment Name</label>
+            <input id="community" required maxlength="120"
+                   placeholder="e.g. Green Park Apartments">
+
+            <label for="location">Location</label>
+            <input id="location" required maxlength="200"
+                   placeholder="Area or address">
+
+            <label for="service">Required Service</label>
+            <select id="service" required>
+                <option value="">Select a service</option>
+                <option>Apartment cleaning</option>
+                <option>Plumbing</option>
+                <option>Electrical repairs</option>
+                <option>Gardening</option>
+                <option>Other</option>
+            </select>
+
+            <label for="units">Number of homes / service units</label>
+            <input id="units" type="number" min="1" max="10000" required>
+
+            <label for="date">Preferred Date</label>
+            <input id="date" type="date" required>
+
+            <label for="details">Additional Details</label>
+            <textarea id="details" rows="3" maxlength="1000"
+                      placeholder="Describe the community's requirements"></textarea>
+
+            <button type="submit">Preview Request</button>
+        </form>
+        <p id="message" class="note" role="status"></p>
+    </section>
+
+    <section class="panel">
+        <h2>Request Preview</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Community</th>
+                        <th>Service</th>
+                        <th>Units</th>
+                        <th>Preferred Date</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingRows">
+                    <tr><td colspan="4">No preview requests yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <a th:href="@{/cooperative-dashboard}">← Back to Dashboard</a>
+</main>
+
+<script>
+    const form = document.getElementById("bookingForm");
+    const rows = document.getElementById("bookingRows");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const community = document.getElementById("community").value.trim();
+        const location = document.getElementById("location").value.trim();
+        const service = document.getElementById("service").value;
+        const units = document.getElementById("units").value;
+        const date = document.getElementById("date").value;
+
+        if (!community || !location || !service ||
+            Number(units) < 1 || !date) {
+            message.textContent = "Please complete all required fields.";
+            return;
+        }
+
+        if (rows.querySelector("td[colspan='4']")) {
+            rows.replaceChildren();
+        }
+
+        const row = document.createElement("tr");
+        [community, service, units, date].forEach(function (value) {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+        rows.appendChild(row);
+
+        message.textContent =
+            "Request preview added. It has not been saved to the server.";
+        form.reset();
+    });
+</script>
+</body>
+</html>

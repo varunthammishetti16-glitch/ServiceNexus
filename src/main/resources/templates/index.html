@@ -1,108 +1,156 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ServiceNexus | Local Services, Stronger Communities</title>
+    <meta name="description" content="Discover trusted local service professionals, book household services, and support worker cooperatives with ServiceNexus.">
 
-    <meta name="description"
-          content="Discover trusted local service professionals, book household services, and support worker cooperatives with ServiceNexus.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
-    <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <style>
+        .cooperative-management-section {
+            padding: 80px 0;
+            background: #f5f8f6;
+        }
 
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+        .cooperative-management-heading {
+            text-align: center;
+            margin-bottom: 42px;
+        }
 
-    <!-- Custom CSS -->
-   <link rel="stylesheet" th:href="@{/css/style.css}">
+        .cooperative-management-heading .eyebrow {
+            color: #198754;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .cooperative-management-heading h2 {
+            margin: 12px 0;
+            font-weight: 800;
+        }
+
+        .cooperative-management-heading h2 span {
+            color: #198754;
+        }
+
+        .cooperative-management-heading p {
+            color: #667085;
+        }
+
+        .cooperative-management-card {
+            display: block;
+            height: 100%;
+            padding: 28px;
+            color: #25332d;
+            background: #fff;
+            border: 1px solid #e3ebe6;
+            border-radius: 16px;
+            text-decoration: none;
+            box-shadow: 0 5px 20px rgba(20, 50, 35, 0.04);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .cooperative-management-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(20, 50, 35, 0.12);
+            color: #198754;
+        }
+
+        .cooperative-management-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 58px;
+            height: 58px;
+            margin-bottom: 20px;
+            background: #e8f5ed;
+            border-radius: 14px;
+            font-size: 28px;
+        }
+
+        .cooperative-management-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cooperative-management-card p {
+            color: #667085;
+            min-height: 48px;
+            margin-bottom: 18px;
+        }
+
+        .cooperative-management-link {
+            color: #198754;
+            font-weight: 700;
+        }
+
+        .main-navbar .navbar-nav .nav-link {
+            font-weight: 600;
+        }
+
+        .site-footer a {
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- ================= NAVIGATION ================= -->
-
+<!-- NAVIGATION -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top main-navbar">
-
     <div class="container">
-
         <a class="navbar-brand brand" th:href="@{/}">
             <span class="brand-icon">S</span>
             ServiceNexus<span class="brand-dot">.</span>
         </a>
 
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarMenu"
-                aria-controls="navbarMenu"
-                aria-expanded="false"
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false"
                 aria-label="Toggle navigation">
-
             <span class="navbar-toggler-icon"></span>
-
         </button>
 
         <div class="collapse navbar-collapse" id="navbarMenu">
-
             <ul class="navbar-nav mx-auto">
-
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/}">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#services">Services</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#how-it-works">How It Works</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#cooperatives">Cooperatives</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About Us</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link active" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cooperatives">Cooperatives</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cooperative-management">Cooperative Management</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
             </ul>
 
-            <div class="nav-actions">
-
-                <a href="/login" class="login-link">Log in</a>
-
-                <a href="/register" class="btn btn-brand">
-                    Get Started
-                </a>
-
-            </div>
-
+            <div class="nav-actions" th:if="${customerLoggedIn}">
+    <span class="login-link">
+        Welcome, <strong th:text="${customerName}">Customer</strong>
+    </span>
+    <form th:action="@{/logout}" method="post" class="d-inline">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <button type="submit" class="btn btn-brand">Logout</button>
+    </form>
+</div>
+<div class="nav-actions" th:unless="${customerLoggedIn}">
+    <a href="/login" class="login-link">Log in</a>
+    <a href="/register" class="btn btn-brand">Get Started</a>
+</div>
         </div>
-
     </div>
-
 </nav>
 
-
-<!-- ================= HERO SECTION ================= -->
-
+<!-- HERO SECTION -->
 <section class="hero-section">
-
     <div class="container">
-
         <div class="row align-items-center g-5">
-
             <div class="col-lg-7">
-
                 <div class="hero-badge">
                     <span class="status-dot"></span>
                     LOCAL SERVICES. COMMUNITY POWER.
@@ -115,835 +163,382 @@
                 </h1>
 
                 <p class="hero-description">
-
                     From everyday home repairs to essential household services,
                     connect with local professionals and support a stronger,
                     fairer community.
-
                 </p>
 
-                <!-- Search Form -->
-
-                <form class="search-panel"
-                      th:action="@{/services}"
-                      method="get">
-
+                <form class="search-panel" th:action="@{/services}" method="get">
                     <div class="search-field">
-
-                        <span class="search-icon">‚åï</span>
-
+                        <span class="search-icon">GÓÚ</span>
                         <div class="search-input-wrapper">
-
-                            <label for="serviceSearch">
-                                What service do you need?
-                            </label>
-
-                            <input
-                                type="search"
-                                id="serviceSearch"
-                                name="q"
-                                placeholder="Cleaning, plumbing, repairs..."
-                                autocomplete="off">
-
+                            <label for="serviceSearch">What service do you need?</label>
+                            <input type="search" id="serviceSearch" name="q"
+                                   placeholder="Cleaning, plumbing, repairs..." autocomplete="off">
                         </div>
-
                     </div>
 
                     <div class="search-divider"></div>
 
                     <div class="search-field location-field">
-
-                        <span class="location-icon">‚åñ</span>
-
+                        <span class="location-icon">GÓ˚</span>
                         <div class="search-input-wrapper">
-
-                            <label for="serviceLocation">
-                                Your location
-                            </label>
-
-                            <input
-                                type="text"
-                                id="serviceLocation"
-                                name="location"
-                                placeholder="Enter your area">
-
+                            <label for="serviceLocation">Your location</label>
+                            <input type="text" id="serviceLocation" name="location"
+                                   placeholder="Enter your area">
                         </div>
-
                     </div>
 
-                    <button class="search-button" type="submit">
-                        Find Services
-                    </button>
-
+                    <button class="search-button" type="submit">Find Services</button>
                 </form>
 
                 <div class="hero-trust">
-
                     <div class="trust-avatars">
-                        <span>W</span>
-                        <span>C</span>
-                        <span>L</span>
+                        <span>W</span><span>C</span><span>L</span>
                     </div>
-
-                    <p>
-                        <strong>People first.</strong>
-                        Community powered.
-                    </p>
-
+                    <p><strong>People first.</strong> Community powered.</p>
                 </div>
-
             </div>
 
-
-            <!-- Hero Visual -->
-
             <div class="col-lg-5">
-
                 <div class="hero-visual">
-
                     <div class="hero-image-card">
-
                         <div class="visual-top-label">
                             <span class="status-dot"></span>
                             SERVICES THAT BRING US TOGETHER
                         </div>
 
                         <div class="hero-illustration">
-
                             <div class="illustration-circle">
-
                                 <div class="illustration-house">
-
                                     <div class="house-roof"></div>
-
                                     <div class="house-body">
-
                                         <div class="house-window"></div>
-
                                         <div class="house-door"></div>
-
                                     </div>
-
                                 </div>
-
-                                <div class="illustration-tool tool-one">üîß</div>
-
-                                <div class="illustration-tool tool-two">üßπ</div>
-
-                                <div class="illustration-tool tool-three">üå±</div>
-
+                                <div class="illustration-tool tool-one">=Éˆ∫</div>
+                                <div class="illustration-tool tool-two">=É∫¶</div>
+                                <div class="illustration-tool tool-three">=ÉÓ¶</div>
                             </div>
-
                         </div>
 
                         <div class="visual-bottom">
-
                             <div>
                                 <h3>Good work. Fair opportunity.</h3>
                                 <p>Local people making a local difference.</p>
                             </div>
-
-                            <span class="visual-arrow">‚Üó</span>
-
+                            <span class="visual-arrow">GÂ˘</span>
                         </div>
-
                     </div>
-
 
                     <div class="floating-card floating-card-top">
-
-                        <span class="floating-icon green-icon">‚úì</span>
-
-                        <div>
-                            <strong>Community first</strong>
-                            <small>People-powered services</small>
-                        </div>
-
+                        <span class="floating-icon green-icon">G£Ù</span>
+                        <div><strong>Community first</strong><small>People-powered services</small></div>
                     </div>
-
 
                     <div class="floating-card floating-card-bottom">
-
-                        <span class="floating-icon orange-icon">‚ô°</span>
-
-                        <div>
-                            <strong>Support local workers</strong>
-                            <small>Help your neighborhood thrive</small>
-                        </div>
-
+                        <span class="floating-icon orange-icon">G÷Ì</span>
+                        <div><strong>Support local workers</strong><small>Help your neighborhood thrive</small></div>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= TRUST STRIP ================= -->
-
+<!-- TRUST STRIP -->
 <section class="trust-strip">
-
     <div class="container">
-
         <div class="row align-items-center text-center g-3">
-
-            <div class="col-12 col-md-4">
-
-                <div class="trust-item">
-                    <span>‚úì</span>
-                    Discover local professionals
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-4">
-
-                <div class="trust-item">
-                    <span>‚úì</span>
-                    Support fair work opportunities
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-4">
-
-                <div class="trust-item">
-                    <span>‚úì</span>
-                    Strengthen your community
-                </div>
-
-            </div>
-
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G£Ù</span> Discover local professionals</div></div>
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G£Ù</span> Support fair work opportunities</div></div>
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G£Ù</span> Strengthen your community</div></div>
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= SERVICE CATEGORIES ================= -->
-
+<!-- SERVICE CATEGORIES -->
 <section class="services-section section-padding" id="services">
-
     <div class="container">
-
         <div class="section-heading">
-
             <div>
-
                 <span class="section-eyebrow">EXPLORE OUR SERVICES</span>
-
-                <h2>
-                    Everything your home needs.
-                    <span>All in one place.</span>
-                </h2>
-
-                <p>
-                    Find the right help for everyday tasks and essential repairs.
-                </p>
-
+                <h2>Everything your home needs. <span>All in one place.</span></h2>
+                <p>Find the right help for everyday tasks and essential repairs.</p>
             </div>
-
-            <a href="/services" class="section-link">
-                Explore all services <span>‚Üí</span>
-            </a>
-
+            <a href="/services" class="section-link">Explore all services <span>GÂ∆</span></a>
         </div>
-
 
         <div class="row g-4">
-
-            <!-- Cleaning -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=cleaning" class="service-card">
-
-                    <div class="service-icon cleaning-icon">üßπ</div>
-
-                    <h3>Home Cleaning</h3>
-
-                    <p>
-                        Keep your space fresh and comfortable.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon cleaning-icon">=É∫¶</div>
+                    <h3>Home Cleaning</h3><p>Keep your space fresh and comfortable.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Plumbing -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=plumbing" class="service-card">
-
-                    <div class="service-icon plumbing-icon">üîß</div>
-
-                    <h3>Plumbing</h3>
-
-                    <p>
-                        Fix leaks and everyday water problems.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon plumbing-icon">=Éˆ∫</div>
+                    <h3>Plumbing</h3><p>Fix leaks and everyday water problems.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Electrical -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=electrical" class="service-card">
-
-                    <div class="service-icon electrical-icon">‚ö°</div>
-
-                    <h3>Electrical Repair</h3>
-
-                    <p>
-                        Get help with electrical maintenance.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon electrical-icon">G‹Ì</div>
+                    <h3>Electrical Repair</h3><p>Get help with electrical maintenance.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Gardening -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=gardening" class="service-card">
-
-                    <div class="service-icon gardening-icon">üåø</div>
-
-                    <h3>Gardening</h3>
-
-                    <p>
-                        Care for your plants and outdoor spaces.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon gardening-icon">=ÉÓ+</div>
+                    <h3>Gardening</h3><p>Care for your plants and outdoor spaces.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Appliance Repair -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=appliance" class="service-card">
-
-                    <div class="service-icon appliance-icon">üõ†Ô∏è</div>
-
-                    <h3>Appliance Repair</h3>
-
-                    <p>
-                        Help with household appliance problems.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon appliance-icon">=É¢·n+≈</div>
+                    <h3>Appliance Repair</h3><p>Help with household appliance problems.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Painting -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=painting" class="service-card">
-
-                    <div class="service-icon painting-icon">üé®</div>
-
-                    <h3>Painting</h3>
-
-                    <p>
-                        Refresh your walls and living spaces.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon painting-icon">=Éƒø</div>
+                    <h3>Painting</h3><p>Refresh your walls and living spaces.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- Moving -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services?q=moving" class="service-card">
-
-                    <div class="service-icon moving-icon">üì¶</div>
-
-                    <h3>Moving Help</h3>
-
-                    <p>
-                        Make your next move more manageable.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon moving-icon">=ÉÙ™</div>
+                    <h3>Moving Help</h3><p>Make your next move more manageable.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
-
-            <!-- More -->
-
             <div class="col-6 col-lg-3">
-
                 <a href="/services" class="service-card more-card">
-
-                    <div class="service-icon more-icon">Ôºã</div>
-
-                    <h3>Explore More</h3>
-
-                    <p>
-                        Discover other services near you.
-                    </p>
-
-                    <span class="service-arrow">‚Üó</span>
-
+                    <div class="service-icon more-icon">n+Ô</div>
+                    <h3>Explore More</h3><p>Discover other services near you.</p><span class="service-arrow">GÂ˘</span>
                 </a>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= HOW IT WORKS ================= -->
-
+<!-- HOW IT WORKS -->
 <section class="how-section section-padding" id="how-it-works">
-
     <div class="container">
-
         <div class="section-heading centered-heading">
-
             <span class="section-eyebrow">SIMPLE. LOCAL. RELIABLE.</span>
-
-            <h2>
-                Getting things done,
-                <span>made simple.</span>
-            </h2>
-
-            <p>
-                A straightforward way to find services and connect with local workers.
-            </p>
-
+            <h2>Getting things done, <span>made simple.</span></h2>
+            <p>A straightforward way to find services and connect with local workers.</p>
         </div>
-
 
         <div class="row g-4 mt-3">
-
             <div class="col-md-4">
-
                 <div class="step-card">
-
-                    <div class="step-number">01</div>
-
-                    <div class="step-icon">üîé</div>
-
+                    <div class="step-number">01</div><div class="step-icon">=Éˆƒ</div>
                     <h3>Find your service</h3>
-
-                    <p>
-                        Explore available services and find the right kind
-                        of help for your needs.
-                    </p>
-
+                    <p>Explore available services and find the right kind of help for your needs.</p>
                 </div>
-
             </div>
-
-
             <div class="col-md-4">
-
                 <div class="step-card">
-
-                    <div class="step-number">02</div>
-
-                    <div class="step-icon">üìÖ</div>
-
+                    <div class="step-number">02</div><div class="step-icon">=ÉÙ‡</div>
                     <h3>Choose a time</h3>
-
-                    <p>
-                        Review available providers and request a service
-                        at a convenient time.
-                    </p>
-
+                    <p>Review available providers and request a service at a convenient time.</p>
                 </div>
-
             </div>
-
-
             <div class="col-md-4">
-
                 <div class="step-card">
-
-                    <div class="step-number">03</div>
-
-                    <div class="step-icon">ü§ù</div>
-
+                    <div class="step-number">03</div><div class="step-icon">=ÉÒ•</div>
                     <h3>Support local work</h3>
-
-                    <p>
-                        Get your task done while supporting workers
-                        and your local community.
-                    </p>
-
+                    <p>Get your task done while supporting workers and your local community.</p>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= WORKER SECTION ================= -->
-
+<!-- WORKER SECTION -->
 <section class="worker-section section-padding" id="workers">
-
     <div class="container">
-
         <div class="worker-banner">
-
             <div class="worker-content">
-
-                <span class="worker-eyebrow">
-                    FOR LOCAL SERVICE PROFESSIONALS
-                </span>
-
-                <h2>
-                    Your skills deserve
-                    <span>better opportunities.</span>
-                </h2>
-
-                <p>
-                    Discover work opportunities, connect with customers,
-                    showcase your skills, and become part of a community
-                    that values your contribution.
-                </p>
-
-                <a href="/register?role=WORKER" class="btn worker-button">
-                    Join as a Service Provider <span>‚Üí</span>
-                </a>
-
+                <span class="worker-eyebrow">FOR LOCAL SERVICE PROFESSIONALS</span>
+                <h2>Your skills deserve <span>better opportunities.</span></h2>
+                <p>Discover work opportunities, connect with customers, showcase your skills, and become part of a community that values your contribution.</p>
+                <a href="/register?role=WORKER" class="btn worker-button">Join as a Service Provider <span>GÂ∆</span></a>
                 <div class="worker-benefits">
-
-                    <span>‚úì Showcase your skills</span>
-
-                    <span>‚úì Manage your availability</span>
-
-                    <span>‚úì Connect with customers</span>
-
+                    <span>G£Ù Showcase your skills</span>
+                    <span>G£Ù Manage your availability</span>
+                    <span>G£Ù Connect with customers</span>
                 </div>
-
             </div>
-
-
             <div class="worker-visual">
-
-                <div class="worker-circle">
-
-                    <div class="worker-emoji">üßë‚Äçüîß</div>
-
-                </div>
-
-                <div class="worker-note">
-
-                    <span>‚ú¶</span>
-
-                    <div>
-                        <strong>Your work matters.</strong>
-                        <small>Grow with your community.</small>
-                    </div>
-
-                </div>
-
+                <div class="worker-circle"><div class="worker-emoji">=É∫ÊG«Ï=Éˆ∫</div></div>
+                <div class="worker-note"><span>G£™</span><div><strong>Your work matters.</strong><small>Grow with your community.</small></div></div>
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= COOPERATIVES ================= -->
-
+<!-- COOPERATIVES -->
 <section class="cooperative-section section-padding" id="cooperatives">
-
     <div class="container">
-
         <div class="row align-items-center g-5">
-
             <div class="col-lg-6">
-
                 <span class="section-eyebrow">MORE THAN A MARKETPLACE</span>
-
-                <h2>
-                    Work together.
-                    <span>Grow together.</span>
-                </h2>
-
+                <h2>Work together. <span>Grow together.</span></h2>
                 <p class="cooperative-description">
-
-                    ServiceNexus is designed around a cooperative approach
-                    to local services. Workers can collaborate, share
-                    opportunities, and help build a stronger local economy.
-
+                    ServiceNexus is designed around a cooperative approach to local services.
+                    Workers can collaborate, share opportunities, and help build a stronger local economy.
                 </p>
 
                 <div class="cooperative-benefit">
-
-                    <span class="benefit-check">‚úì</span>
-
-                    <div>
-
-                        <h3>Shared opportunities</h3>
-
-                        <p>
-                            Help local workers discover and coordinate job opportunities.
-                        </p>
-
-                    </div>
-
+                    <span class="benefit-check">G£Ù</span>
+                    <div><h3>Shared opportunities</h3><p>Help local workers discover and coordinate job opportunities.</p></div>
                 </div>
-
-
                 <div class="cooperative-benefit">
-
-                    <span class="benefit-check">‚úì</span>
-
-                    <div>
-
-                        <h3>Community participation</h3>
-
-                        <p>
-                            Encourage collaboration between workers, customers,
-                            and local organizations.
-                        </p>
-
-                    </div>
-
+                    <span class="benefit-check">G£Ù</span>
+                    <div><h3>Community participation</h3><p>Encourage collaboration between workers, customers, and local organizations.</p></div>
                 </div>
-
-
                 <div class="cooperative-benefit">
-
-                    <span class="benefit-check">‚úì</span>
-
-                    <div>
-
-                        <h3>Fairer work opportunities</h3>
-
-                        <p>
-                            Build a service ecosystem that values workers
-                            and the communities they serve.
-                        </p>
-
-                    </div>
-
+                    <span class="benefit-check">G£Ù</span>
+                    <div><h3>Fairer work opportunities</h3><p>Build a service ecosystem that values workers and the communities they serve.</p></div>
                 </div>
 
-                <a href="/cooperatives" class="btn btn-brand mt-3">
-                    Discover Cooperatives ‚Üí
-                </a>
-
+                <a href="/cooperatives" class="btn btn-brand mt-3">Discover Cooperatives GÂ∆</a>
             </div>
-
 
             <div class="col-lg-6">
-
                 <div class="cooperative-visual">
-
                     <div class="community-orbit orbit-one"></div>
-
                     <div class="community-orbit orbit-two"></div>
-
-                    <div class="community-center">
-                        <span>SN</span>
-                        <strong>Community</strong>
-                    </div>
-
-                    <div class="community-member member-one">
-                        <span>üë©‚Äçüîß</span>
-                        <small>Workers</small>
-                    </div>
-
-                    <div class="community-member member-two">
-                        <span>üè°</span>
-                        <small>Homes</small>
-                    </div>
-
-                    <div class="community-member member-three">
-                        <span>ü§ù</span>
-                        <small>Cooperatives</small>
-                    </div>
-
-                    <div class="community-member member-four">
-                        <span>üå±</span>
-                        <small>Community</small>
-                    </div>
-
+                    <div class="community-center"><span>SN</span><strong>Community</strong></div>
+                    <div class="community-member member-one"><span>=ÉÊ¨G«Ï=Éˆ∫</span><small>Workers</small></div>
+                    <div class="community-member member-two"><span>=É≈Ì</span><small>Homes</small></div>
+                    <div class="community-member member-three"><span>=ÉÒ•</span><small>Cooperatives</small></div>
+                    <div class="community-member member-four"><span>=ÉÓ¶</span><small>Community</small></div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </section>
 
-
-<!-- ================= FINAL CTA ================= -->
-
-<section class="final-cta" id="about">
-
-    <div class="container text-center">
-
-        <span class="section-eyebrow">LET'S BUILD SOMETHING BETTER</span>
-
-        <h2>
-            Great services start
-            <span>with great communities.</span>
-        </h2>
-
-        <p>
-            Whether you need help at home or have a skill to share,
-            there's a place for you at ServiceNexus.
-        </p>
-
-        <div class="cta-buttons">
-
-            <a href="/services" class="btn btn-brand">
-                Find a Service ‚Üí
-            </a>
-
-            <a href="/register?role=WORKER" class="btn btn-outline-brand">
-                Become a Provider
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer class="site-footer">
-
+<!-- COOPERATIVE MANAGEMENT: CLICK TO OPEN EACH PAGE -->
+<section class="cooperative-management-section" id="cooperative-management">
     <div class="container">
+        <div class="cooperative-management-heading">
+            <span class="eyebrow">COOPERATIVE MANAGEMENT</span>
+            <h2>Cooperative <span>Management</span></h2>
+            <p>Quick access to cooperative management features.</p>
+        </div>
 
         <div class="row g-4">
-
-            <div class="col-lg-5">
-
-                <a class="navbar-brand brand footer-brand" th:href="@{/}">
-                    <span class="brand-icon">S</span>
-                    ServiceNexus<span class="brand-dot">.</span>
+            <div class="col-md-6 col-lg-4">
+                <a href="/cooperatives" class="cooperative-management-card">
+                    <div class="cooperative-management-icon">=ÉÒ•</div>
+                    <h3>Cooperatives</h3>
+                    <p>View and manage worker cooperatives.</p>
+                    <span class="cooperative-management-link">Open Cooperatives GÂ∆</span>
                 </a>
+            </div>
 
+            <div class="col-md-6 col-lg-4">
+                <a href="/cooperative-dashboard" class="cooperative-management-card">
+                    <div class="cooperative-management-icon">=ÉÙË</div>
+                    <h3>Cooperative Dashboard</h3>
+                    <p>Access the cooperative overview page.</p>
+                    <span class="cooperative-management-link">Open Dashboard GÂ∆</span>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a href="/cooperative-members" class="cooperative-management-card">
+                    <div class="cooperative-management-icon">=ÉÊ—</div>
+                    <h3>Cooperative Members</h3>
+                    <p>Register and view cooperative members.</p>
+                    <span class="cooperative-management-link">Manage Members GÂ∆</span>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a href="/community-bookings" class="cooperative-management-card">
+                    <div class="cooperative-management-icon">=ÉÙ‡</div>
+                    <h3>Community Bookings</h3>
+                    <p>Access community service booking requests.</p>
+                    <span class="cooperative-management-link">View Bookings GÂ∆</span>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a href="/work-allocation" class="cooperative-management-card">
+                    <div class="cooperative-management-icon">=É¢·n+≈</div>
+                    <h3>Work Allocation</h3>
+                    <p>Access the work allocation page.</p>
+                    <span class="cooperative-management-link">Open Allocation GÂ∆</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" id="about">
+    <div class="container text-center">
+        <span class="section-eyebrow">LET'S BUILD SOMETHING BETTER</span>
+        <h2>Great services start <span>with great communities.</span></h2>
+        <p>Whether you need help at home or have a skill to share, there's a place for you at ServiceNexus.</p>
+        <div class="cta-buttons">
+            <a href="/services" class="btn btn-brand">Find a Service GÂ∆</a>
+            <a href="/register?role=WORKER" class="btn btn-outline-brand">Become a Provider</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <a class="navbar-brand brand footer-brand" th:href="@{/}">
+                    <span class="brand-icon">S</span> ServiceNexus<span class="brand-dot">.</span>
+                </a>
                 <p class="footer-description">
-
-                    Connecting local services, supporting workers,
-                    and strengthening communities through a cooperative
-                    approach to everyday services.
-
+                    Connecting local services, supporting workers, and strengthening communities
+                    through a cooperative approach to everyday services.
                 </p>
-
             </div>
 
-
             <div class="col-6 col-lg-2">
-
                 <h3>Explore</h3>
-
                 <a href="#services">Services</a>
-
                 <a href="#how-it-works">How It Works</a>
-
                 <a href="#cooperatives">Cooperatives</a>
-
                 <a href="#workers">For Workers</a>
-
+                <a href="#cooperative-management">Cooperative Management</a>
             </div>
-
 
             <div class="col-6 col-lg-2">
-
                 <h3>Account</h3>
-
                 <a href="/login">Log In</a>
-
                 <a href="/register">Register</a>
-
                 <a href="/register?role=WORKER">Join as a Worker</a>
-
             </div>
-
 
             <div class="col-lg-3">
-
                 <h3>Our Mission</h3>
-
-                <p class="footer-mission">
-                    Better opportunities for workers.
-                    Better services for communities.
-                </p>
-
+                <p class="footer-mission">Better opportunities for workers. Better services for communities.</p>
             </div>
-
         </div>
-
 
         <div class="footer-bottom">
-
-            <p>
-                ¬© 2026 ServiceNexus. Built for stronger communities.
-            </p>
-
-            <p>
-                Local services. Shared opportunities. Community first.
-            </p>
-
+            <p>-¨ 2026 ServiceNexus. Built for stronger communities.</p>
+            <p>Local services. Shared opportunities. Community first.</p>
         </div>
-
     </div>
-
 </footer>
 
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
+
