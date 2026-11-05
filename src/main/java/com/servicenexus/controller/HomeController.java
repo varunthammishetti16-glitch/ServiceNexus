@@ -53,4 +53,12 @@ public class HomeController {
     public String profile() {
         return "profile";
     }
+    @GetMapping("/booking")
+public String booking() {
+    return "booking";
+}
+@GetMapping("/my-bookings")
+public String myBookings() {
+    return "my-bookings";
+}
 }

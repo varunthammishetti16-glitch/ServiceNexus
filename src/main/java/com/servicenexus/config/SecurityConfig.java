@@ -1,9 +1,12 @@
+
 package com.servicenexus.config;
 
 import com.servicenexus.service.CustomerUserDetailsService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.User;
@@ -74,13 +77,15 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider)
 
-.csrf(csrf -> csrf
-    .ignoringRequestMatchers(
-        new AntPathRequestMatcher("/api/customers/register", "POST"),
-        new AntPathRequestMatcher("/api/cooperatives", "POST")
-    )
-)
+            // CSRF configuration
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher("/api/customers/**"),
+                    new AntPathRequestMatcher("/api/cooperatives", "POST")
+                )
+            )
 
+            // Authorization rules
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers(
@@ -107,6 +112,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
 
+            // Login configuration
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -114,6 +120,7 @@ public class SecurityConfig {
                 .permitAll()
             )
 
+            // Logout configuration
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
