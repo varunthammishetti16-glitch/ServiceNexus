@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
@@ -140,7 +141,7 @@
     <!-- Dashboard Heading -->
     <h1>Worker Dashboard</h1>
 
-    <p>Manage your services, availability and earnings on ServiceNexus.</p>
+    <p>Manage your services, availability, bookings and earnings on ServiceNexus.</p>
 
     <!-- Success and Error Messages -->
     <p th:if="${success}"
@@ -204,6 +205,22 @@
 
                 <a th:href="@{/worker/earnings}">
                     View Earnings
+                </a>
+
+            </article>
+
+            <!-- My Bookings -->
+            <article class="worker-nav-card">
+
+                <h3>My Bookings</h3>
+
+                <p>
+                    View customer booking requests, accept or reject
+                    pending bookings, and complete accepted jobs.
+                </p>
+
+                <a th:href="@{/worker/bookings}">
+                    Manage Bookings
                 </a>
 
             </article>

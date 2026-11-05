@@ -1,10 +1,6 @@
-
 package com.servicenexus.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,6 +36,10 @@ public class WorkerService {
     private String location;
 
     private boolean active = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worker_profile_id")
+    private WorkerProfile workerProfile;
 
     public WorkerService() {
     }
@@ -94,5 +94,13 @@ public class WorkerService {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public WorkerProfile getWorkerProfile() {
+        return workerProfile;
+    }
+
+    public void setWorkerProfile(WorkerProfile workerProfile) {
+        this.workerProfile = workerProfile;
     }
 }
