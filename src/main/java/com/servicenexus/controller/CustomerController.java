@@ -4,30 +4,36 @@ package com.servicenexus.controller;
 import com.servicenexus.dto.CustomerProfileUpdateRequest;
 import com.servicenexus.dto.CustomerRegistrationRequest;
 import com.servicenexus.dto.CustomerRegistrationResponse;
-import com.servicenexus.service.CustomerService;
 import com.servicenexus.dto.ChangePasswordRequest;
+import com.servicenexus.dto.CreateBookingRequest;
+import com.servicenexus.dto.BookingResponse;
+import com.servicenexus.dto.AvailableServiceResponse;
+import com.servicenexus.service.CustomerService;
+import com.servicenexus.service.BookingService;
+
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final BookingService bookingService;
 
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(
+            CustomerService customerService,
+            BookingService bookingService) {
+
         this.customerService = customerService;
+        this.bookingService = bookingService;
     }
 
     // CUSTOMER REGISTRATION
@@ -38,9 +44,7 @@ public class CustomerController {
         CustomerRegistrationResponse response =
                 customerService.register(request);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // GET LOGGED-IN CUSTOMER PROFILE
@@ -50,8 +54,7 @@ public class CustomerController {
 
         CustomerRegistrationResponse response =
                 customerService.getCustomerProfileByEmail(
-                        userDetails.getUsername()
-                );
+                        userDetails.getUsername());
 
         return ResponseEntity.ok(response);
     }
@@ -65,8 +68,7 @@ public class CustomerController {
         CustomerRegistrationResponse response =
                 customerService.getCustomerProfile(
                         id,
-                        userDetails.getUsername()
-                );
+                        userDetails.getUsername());
 
         return ResponseEntity.ok(response);
     }
@@ -82,22 +84,71 @@ public class CustomerController {
                 customerService.updateCustomerProfile(
                         id,
                         request,
-                        userDetails.getUsername()
-                );
+                        userDetails.getUsername());
 
         return ResponseEntity.ok(response);
     }
+
     // CHANGE CUSTOMER PASSWORD
-@PutMapping("/me/change-password")
-public ResponseEntity<String> changePassword(
-        @Valid @RequestBody ChangePasswordRequest request,
-        @AuthenticationPrincipal UserDetails userDetails) {
+    @PutMapping("/me/change-password")
+    public ResponseEntity<String> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    customerService.changePassword(
-            request,
-            userDetails.getUsername()
-    );
+        customerService.changePassword(
+                request,
+                userDetails.getUsername());
 
-    return ResponseEntity.ok("Password changed successfully");
-}
+        return ResponseEntity.ok("Password changed successfully");
+    }
+
+    // CREATE CUSTOMER BOOKING
+    @PostMapping("/me/bookings")
+    public ResponseEntity<BookingResponse> createBooking(
+            @Valid @RequestBody CreateBookingRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        BookingResponse response =
+                bookingService.createBooking(
+                        request,
+                        userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // GET CUSTOMER BOOKING HISTORY
+    @GetMapping("/me/bookings")
+    public ResponseEntity<List<BookingResponse>> getMyBookings(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<BookingResponse> bookings =
+                bookingService.getMyBookings(
+                        userDetails.getUsername());
+
+        return ResponseEntity.ok(bookings);
+    }
+
+    // CANCEL CUSTOMER BOOKING
+    @PutMapping("/me/bookings/{bookingId}/cancel")
+    public ResponseEntity<BookingResponse> cancelBooking(
+            @PathVariable Long bookingId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        BookingResponse response =
+                bookingService.cancelBooking(
+                        bookingId,
+                        userDetails.getUsername());
+
+        return ResponseEntity.ok(response);
+    }
+
+    // GET ACTIVE SERVICES FOR CUSTOMER BOOKING
+    @GetMapping("/me/available-services")
+    public ResponseEntity<List<AvailableServiceResponse>> getAvailableServices() {
+
+        List<AvailableServiceResponse> services =
+                bookingService.getAvailableServices();
+
+        return ResponseEntity.ok(services);
+    }
 }
