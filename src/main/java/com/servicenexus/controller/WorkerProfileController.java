@@ -1,11 +1,14 @@
 
 package com.servicenexus.controller;
 
+import com.servicenexus.entity.WorkerAccount;
 import com.servicenexus.model.WorkerProfile;
+import com.servicenexus.repository.WorkerAccountRepository;
 import com.servicenexus.repository.WorkerProfileRepository;
 
 import jakarta.validation.Valid;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,80 +17,72 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
-import java.util.List;
-
 @Controller
 public class WorkerProfileController {
 
     private final WorkerProfileRepository workerProfileRepository;
+    private final WorkerAccountRepository workerAccountRepository;
 
     public WorkerProfileController(
-            WorkerProfileRepository workerProfileRepository) {
+            WorkerProfileRepository workerProfileRepository,
+            WorkerAccountRepository workerAccountRepository) {
+
         this.workerProfileRepository = workerProfileRepository;
+        this.workerAccountRepository = workerAccountRepository;
     }
 
-    // Display the latest saved worker profile and print debug information
+    // Display only the logged-in worker's profile
     @GetMapping("/worker/profile")
-    public String showProfileForm(Model model) {
+    public String showProfileForm(
+            Authentication authentication,
+            Model model) {
 
-        List<WorkerProfile> profiles =
-                workerProfileRepository.findAll();
+        WorkerAccount account = workerAccountRepository
+                .findByEmailWithWorkerProfile(authentication.getName())
+                .orElse(null);
 
-        System.out.println("========== PROFILE DEBUG ==========");
-        System.out.println("Profiles found in database: " + profiles.size());
+        if (account == null) {
+            return "redirect:/login";
+        }
 
-        WorkerProfile profile = profiles.stream()
-                .filter(p -> p.getId() != null)
-                .max(Comparator.comparing(WorkerProfile::getId))
-                .orElseGet(WorkerProfile::new);
-
-        System.out.println("Profile ID loaded: " + profile.getId());
-        System.out.println("Profile name loaded: " + profile.getName());
-        System.out.println("===================================");
-
-        model.addAttribute("profile", profile);
+        model.addAttribute("profile", account.getWorkerProfile());
 
         return "worker-profile";
     }
 
-    // Save a new profile or update the latest existing profile
+    // Update only the logged-in worker's linked profile
     @PostMapping("/worker/profile")
     public String saveProfile(
             @Valid @ModelAttribute("profile") WorkerProfile profile,
             BindingResult result,
+            Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
+        WorkerAccount account = workerAccountRepository
+                .findByEmailWithWorkerProfile(authentication.getName())
+                .orElse(null);
+
+        if (account == null) {
+            return "redirect:/login";
+        }
+
         if (result.hasErrors()) {
-            System.out.println("Profile validation failed:");
-            result.getAllErrors().forEach(System.out::println);
             return "worker-profile";
         }
 
-        List<WorkerProfile> profiles =
-                workerProfileRepository.findAll();
+        WorkerProfile existingProfile = account.getWorkerProfile();
 
-        WorkerProfile existingProfile = profiles.stream()
-                .filter(p -> p.getId() != null)
-                .max(Comparator.comparing(WorkerProfile::getId))
-                .orElse(null);
+        existingProfile.setName(profile.getName());
+        existingProfile.setPhone(profile.getPhone());
+        existingProfile.setSkills(profile.getSkills());
+        existingProfile.setLocation(profile.getLocation());
+        existingProfile.setDescription(profile.getDescription());
 
-        if (existingProfile != null) {
-            existingProfile.setName(profile.getName());
-            existingProfile.setPhone(profile.getPhone());
-            existingProfile.setSkills(profile.getSkills());
-            existingProfile.setLocation(profile.getLocation());
-            existingProfile.setDescription(profile.getDescription());
-
-            workerProfileRepository.save(existingProfile);
-
-        } else {
-            workerProfileRepository.save(profile);
-        }
+        workerProfileRepository.save(existingProfile);
 
         redirectAttributes.addFlashAttribute(
                 "success",
-                "Worker profile saved successfully!");
+                "Worker profile updated successfully!");
 
         return "redirect:/worker/profile";
     }

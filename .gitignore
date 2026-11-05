@@ -2,3 +2,6 @@ target/
 .env
 *.class
 .idea/
+*.backup
+startup-error.txt
+servicenexus_schema.sql

@@ -1,15 +1,22 @@
 package com.servicenexus.config;
 
+import com.servicenexus.repository.WorkerAccountRepository;
 import com.servicenexus.service.CustomerUserDetailsService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +33,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider(
             CustomerUserDetailsService customerUserDetailsService,
+            WorkerAccountRepository workerAccountRepository,
             PasswordEncoder passwordEncoder) {
 
         UserDetails admin = User.withUsername("admin")
@@ -37,11 +45,40 @@ public class SecurityConfig {
                 new DaoAuthenticationProvider();
 
         provider.setUserDetailsService(username -> {
-            if ("admin".equalsIgnoreCase(username.trim())) {
+
+            String email = username.trim();
+
+            // Admin authentication
+            if ("admin".equalsIgnoreCase(email)) {
                 return admin;
             }
 
-            return customerUserDetailsService.loadUserByUsername(username);
+            // Worker authentication
+            return workerAccountRepository
+                    .findByEmailIgnoreCase(email)
+                    .map(account -> {
+
+                        String status = account.getVerificationStatus();
+
+                        // Only approved workers can log in
+                        if (!"APPROVED".equalsIgnoreCase(status)) {
+                            throw new DisabledException(
+                                    "Your worker account is not approved yet. "
+                                    + "Please contact the administrator."
+                            );
+                        }
+
+                        return User.withUsername(account.getEmail())
+                                .password(account.getPasswordHash())
+                                .roles("WORKER")
+                                .build();
+                    })
+
+                    // Customer authentication
+                    .orElseGet(() ->
+                            customerUserDetailsService
+                                    .loadUserByUsername(email)
+                    );
         });
 
         provider.setPasswordEncoder(passwordEncoder);
@@ -55,6 +92,7 @@ public class SecurityConfig {
             AuthenticationProvider authenticationProvider)
             throws Exception {
 
+        // Login redirection based on user role
         AuthenticationSuccessHandler successHandler =
                 (request, response, authentication) -> {
 
@@ -64,8 +102,18 @@ public class SecurityConfig {
                                     authority.getAuthority()
                                             .equals("ROLE_ADMIN"));
 
+                    boolean isWorker = authentication.getAuthorities()
+                            .stream()
+                            .anyMatch(authority ->
+                                    authority.getAuthority()
+                                            .equals("ROLE_WORKER"));
+
                     if (isAdmin) {
                         response.sendRedirect("/admin/dashboard");
+
+                    } else if (isWorker) {
+                        response.sendRedirect("/worker");
+
                     } else {
                         response.sendRedirect("/");
                     }
@@ -74,15 +122,20 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider)
 
-.csrf(csrf -> csrf
-    .ignoringRequestMatchers(
-        new AntPathRequestMatcher("/api/customers/register", "POST"),
-        new AntPathRequestMatcher("/api/cooperatives", "POST")
-    )
-)
+            // CSRF configuration
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher(
+                            "/api/customers/register", "POST"),
+                    new AntPathRequestMatcher(
+                            "/api/cooperatives", "POST")
+                )
+            )
 
+            // Authorization rules
             .authorizeHttpRequests(auth -> auth
 
+                // Public pages and resources
                 .requestMatchers(
                     "/",
                     "/login",
@@ -90,23 +143,33 @@ public class SecurityConfig {
                     "/services",
                     "/css/**",
                     "/js/**",
-                    "/images/**"
+                    "/images/**",
+                    "/worker/register",
+                    "/worker/register/**"
                 ).permitAll()
 
+                // Customer registration
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/customers/register"
                 ).permitAll()
 
+                // Admin access
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
+                // Customer API access
                 .requestMatchers("/api/customers/**")
                 .hasRole("CUSTOMER")
+
+                // Worker access
+                .requestMatchers("/worker/**")
+                .hasRole("WORKER")
 
                 .anyRequest().permitAll()
             )
 
+            // Form login
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -114,6 +177,7 @@ public class SecurityConfig {
                 .permitAll()
             )
 
+            // Logout
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()

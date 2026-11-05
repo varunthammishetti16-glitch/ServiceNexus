@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - ServiceNexus</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8f5;
+            margin: 0;
+            color: #26382e;
+        }
+
+        header {
+            background: #243b55;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+        }
+
+        header p {
+            margin: 0;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .container > h2 {
+            color: #243b55;
+            margin-bottom: 25px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            text-align: center;
+            border: 1px solid #e1ebe4;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 18px rgba(0,0,0,0.12);
+        }
+
+        .card h2 {
+            color: #07865f;
+            margin-top: 0;
+        }
+
+        .card p {
+            color: #64756b;
+            min-height: 40px;
+            line-height: 1.5;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 12px 20px;
+            background: #07865f;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .card a:hover {
+            background: #066c4c;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .logout form {
+            display: inline;
+        }
+
+        .logout button {
+            border: none;
+            background: transparent;
+            color: #d32f2f;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 92%;
+                margin: 25px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ServiceNexus Worker Dashboard</h1>
+    <p>Welcome to your worker portal!</p>
+</header>
+
+<div class="container">
+
+    <h2>Manage Your Work</h2>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h2>My Profile</h2>
+            <p>View and update your name, phone, skills and professional information.</p>
+            <a th:href="@{/worker/profile}">Manage Profile</a>
+        </div>
+
+        <div class="card">
+            <h2>Availability</h2>
+            <p>Manage your working days and availability.</p>
+            <a th:href="@{/worker/availability}">Manage Availability</a>
+        </div>
+
+        <div class="card">
+            <h2>My Earnings</h2>
+            <p>View your earnings information.</p>
+            <a th:href="@{/worker/earnings}">View Earnings</a>
+        </div>
+
+    </div>
+
+    <div class="logout">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

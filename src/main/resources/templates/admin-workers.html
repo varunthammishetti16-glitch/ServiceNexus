@@ -1,5 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,14 +51,22 @@
             border-radius: 12px;
             box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
         }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 7px 10px;
+        }
     </style>
 </head>
 
 <body>
+
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR -->
         <aside class="col-md-3 col-lg-2 sidebar">
+
             <h3>ServiceNexus</h3>
 
             <a th:href="@{/admin/dashboard}">Dashboard</a>
@@ -65,104 +75,215 @@
             <a th:href="@{/admin/bookings}">Bookings</a>
             <a th:href="@{/admin/cooperatives}">Cooperatives</a>
             <a th:href="@{/}">Back to Home</a>
+
         </aside>
 
+        <!-- MAIN CONTENT -->
         <main class="col-md-9 col-lg-10 main-content">
 
             <h2>Manage Workers</h2>
 
             <p class="text-secondary">
-                View registered workers and their professional details.
+                Verify registered workers and manage their professional details.
             </p>
 
+            <!-- SUCCESS MESSAGE -->
+            <div th:if="${successMessage}"
+                 class="alert alert-success alert-dismissible fade show"
+                 role="alert">
+
+                <span th:text="${successMessage}"></span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- SEARCH AND WORKER TABLE -->
             <div class="card content-card mt-4 p-4">
-           <div class="row g-3 mb-4">
 
-    <div class="col-md-6">
-        <input type="search"
-               id="workerSearch"
-               class="form-control"
-               placeholder="Search by worker name or skill...">
-    </div>
+                <div class="row g-3 mb-4">
 
-    <div class="col-md-6">
-        <input type="search"
-               id="workerLocation"
-               class="form-control"
-               placeholder="Filter by location...">
-    </div>
+                    <div class="col-md-6">
+                        <input type="search"
+                               id="workerSearch"
+                               class="form-control"
+                               placeholder="Search by worker name or skill...">
+                    </div>
 
-</div>
-</div>
+                    <div class="col-md-6">
+                        <input type="search"
+                               id="workerLocation"
+                               class="form-control"
+                               placeholder="Filter by location...">
+                    </div>
+
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Worker List</h5>
-                 <span class="badge text-bg-success"
-      th:text="${workerCount} + ' Registered Workers'">
-    0 Registered Workers
-</span>
+
+                    <h5 class="mb-0">Registered Worker Accounts</h5>
+
+                    <span class="badge text-bg-success"
+                          th:text="${workerCount} + ' Registered Workers'">
+                        0 Registered Workers
+                    </span>
+
                 </div>
 
                 <div class="table-responsive">
+
                     <table id="workerTable"
-       class="table table-hover align-middle">
+                           class="table table-hover align-middle">
 
                         <thead class="table-light">
+
                         <tr>
-        <th>ID</th>
-        <th>Worker Name</th>
-        <th>Skills</th>
-        <th>Location</th>
-    </tr>
+                            <th>ID</th>
+                            <th>Worker Name</th>
+                            <th>Email</th>
+                            <th>Skills</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
                         </thead>
 
                         <tbody>
+
+                        <!-- EMPTY MESSAGE -->
                         <tr th:if="${#lists.isEmpty(workers)}">
-                            <td colspan="4" class="text-center text-secondary py-4">
-                                No worker records available yet.
+                            <td colspan="7"
+                                class="text-center text-secondary py-4">
+
+                                No registered worker accounts available yet.
+
                             </td>
                         </tr>
 
-                       <tr th:each="worker : ${workers}">
-    <td th:text="${worker.id}">1</td>
-    <td th:text="${worker.name}">Worker Name</td>
-    <td th:text="${worker.skills}">General Services</td>
-    <td th:text="${worker.location}">Worker Location</td>
-</tr>
+                        <!-- WORKER RECORDS -->
+                        <tr th:each="worker : ${workers}"
+                            th:if="${worker.workerProfile != null}">
+
+                            <td th:text="${worker.id}">1</td>
+
+                            <td th:text="${worker.workerProfile.name}">
+                                Worker Name
+                            </td>
+
+                            <td th:text="${worker.email}">
+                                worker@email.com
+                            </td>
+
+                            <td th:text="${worker.workerProfile.skills}">
+                                General Services
+                            </td>
+
+                            <td th:text="${worker.workerProfile.location}">
+                                Worker Location
+                            </td>
+
+                            <!-- VERIFICATION STATUS -->
+                            <td>
+
+                                <span th:if="${worker.verificationStatus == 'PENDING'}"
+                                      class="badge text-bg-warning status-badge">
+                                    PENDING
+                                </span>
+
+                                <span th:if="${worker.verificationStatus == 'APPROVED'}"
+                                      class="badge text-bg-success status-badge">
+                                    APPROVED
+                                </span>
+
+                                <span th:if="${worker.verificationStatus == 'REJECTED'}"
+                                      class="badge text-bg-danger status-badge">
+                                    REJECTED
+                                </span>
+
+                            </td>
+
+                            <!-- ADMIN ACTIONS -->
+                            <td>
+
+                                <div class="d-flex gap-2">
+
+                                    <form th:action="@{/admin/workers/{id}/approve(id=${worker.id})}"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-success"
+                                                onclick="return confirm('Are you sure you want to approve this worker?')">
+
+                                            Approve
+
+                                        </button>
+
+                                    </form>
+
+                                    <form th:action="@{/admin/workers/{id}/reject(id=${worker.id})}"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to reject this worker?')">
+
+                                            Reject
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
                         </tbody>
 
                     </table>
+
                 </div>
 
                 <p class="text-secondary small mb-0">
-                    Worker records will appear here after database integration.
+                    Admins can approve or reject registered worker accounts.
                 </p>
 
             </div>
 
         </main>
+
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+
     const workerSearch = document.getElementById("workerSearch");
     const workerLocation = document.getElementById("workerLocation");
     const workerTable = document.getElementById("workerTable");
 
     function filterWorkers() {
+
         const searchTerm = workerSearch.value.trim().toLowerCase();
         const locationTerm = workerLocation.value.trim().toLowerCase();
 
         const rows = workerTable.querySelectorAll("tbody tr");
+
         let visibleCount = 0;
 
         rows.forEach(row => {
-            // Skip the "No worker records" message.
-            if (row.cells.length < 4) {
+
+            if (row.cells.length < 7) {
                 return;
             }
 
             const name = row.cells[1].textContent.toLowerCase();
-            const skills = row.cells[2].textContent.toLowerCase();
-            const location = row.cells[3].textContent.toLowerCase();
+            const skills = row.cells[3].textContent.toLowerCase();
+            const location = row.cells[4].textContent.toLowerCase();
 
             const matchesSearch =
                 name.includes(searchTerm) ||
@@ -178,20 +299,23 @@
             if (isVisible) {
                 visibleCount++;
             }
+
         });
 
-        updateEmptyMessage(rows, visibleCount);
+        updateEmptyMessage(visibleCount);
     }
 
-    function updateEmptyMessage(rows, visibleCount) {
+    function updateEmptyMessage(visibleCount) {
+
         let message = document.getElementById("noMatchingWorkers");
 
         if (!message) {
+
             message = document.createElement("tr");
             message.id = "noMatchingWorkers";
 
             message.innerHTML = `
-                <td colspan="4" class="text-center text-secondary py-4">
+                <td colspan="7" class="text-center text-secondary py-4">
                     No workers match your search.
                 </td>
             `;
@@ -204,6 +328,8 @@
 
     workerSearch.addEventListener("input", filterWorkers);
     workerLocation.addEventListener("input", filterWorkers);
+
 </script>
+
 </body>
 </html>

@@ -1,5 +1,14 @@
 
 package com.servicenexus.controller;
+
+import com.servicenexus.entity.WorkerAccount;
+import com.servicenexus.repository.WorkerAccountRepository;
+import com.servicenexus.repository.WorkerProfileRepository;
+
+import com.servicenexus.cooperative.dto.CreateCooperativeRequest;
+import com.servicenexus.cooperative.entity.Cooperative;
+import com.servicenexus.cooperative.service.CooperativeService;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -14,58 +23,58 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.servicenexus.cooperative.dto.CreateCooperativeRequest;
-import com.servicenexus.cooperative.entity.Cooperative;
-import com.servicenexus.cooperative.service.CooperativeService;
-import com.servicenexus.model.WorkerProfile;
-import com.servicenexus.repository.WorkerProfileRepository;
-
 import jakarta.validation.Valid;
-
-
 
 @Controller
 public class AdminController {
 
-     private final WorkerProfileRepository workerProfileRepository;
+    private final WorkerProfileRepository workerProfileRepository;
+    private final WorkerAccountRepository workerAccountRepository;
     private final CooperativeService cooperativeService;
 
- public AdminController(
-        CooperativeService cooperativeService,
-        WorkerProfileRepository workerProfileRepository) {
+    public AdminController(
+            CooperativeService cooperativeService,
+            WorkerProfileRepository workerProfileRepository,
+            WorkerAccountRepository workerAccountRepository) {
 
-    this.cooperativeService = cooperativeService;
-    this.workerProfileRepository = workerProfileRepository;
-}
+        this.cooperativeService = cooperativeService;
+        this.workerProfileRepository = workerProfileRepository;
+        this.workerAccountRepository = workerAccountRepository;
+    }
 
-@GetMapping("/admin/dashboard")
-public String showDashboard(Model model) {
+    // ==============================
+    // ADMIN DASHBOARD
+    // ==============================
 
-    // Customer module is not implemented yet.
-    model.addAttribute("customerCount", 0);
+    @GetMapping("/admin/dashboard")
+    public String showDashboard(Model model) {
 
-    // Get the actual number of workers from MySQL.
-    model.addAttribute(
-            "workerCount",
-            workerProfileRepository.count()
-    );
+        model.addAttribute("customerCount", 0);
 
-    // Booking module is not implemented yet.
-    model.addAttribute("bookingCount", 0);
+        model.addAttribute(
+                "workerCount",
+                workerAccountRepository.count()
+        );
 
-    // Get the actual number of cooperatives from MySQL.
-    model.addAttribute(
-            "cooperativeCount",
-            cooperativeService.findAll().size()
-    );
-model.addAttribute(
-        "recentCooperatives",
-        cooperativeService.findRecent(3)
-);
-    return "admin-dashboard";
-}
+        model.addAttribute("bookingCount", 0);
 
-    // Customer Management
+        model.addAttribute(
+                "cooperativeCount",
+                cooperativeService.findAll().size()
+        );
+
+        model.addAttribute(
+                "recentCooperatives",
+                cooperativeService.findRecent(3)
+        );
+
+        return "admin-dashboard";
+    }
+
+    // ==============================
+    // CUSTOMER MANAGEMENT
+    // ==============================
+
     @GetMapping("/admin/customers")
     public String showCustomers(Model model) {
 
@@ -75,132 +84,206 @@ model.addAttribute(
         return "admin-customers";
     }
 
-    // Worker Management
-     @GetMapping("/admin/workers")
-public String showWorkers(
-        @RequestParam(required = false) String name,
-        @RequestParam(required = false) String location,
-        Model model) {
+    // ==============================
+    // WORKER MANAGEMENT
+    // ==============================
 
-    List<WorkerProfile> allWorkers = workerProfileRepository.findAll();
+    @GetMapping("/admin/workers")
+    public String showWorkers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            Model model) {
 
-    List<WorkerProfile> filteredWorkers = allWorkers.stream()
-            .filter(worker -> name == null || name.isBlank()
-                    || (worker.getName() != null
-                    && worker.getName().toLowerCase()
-                    .contains(name.trim().toLowerCase())))
-            .filter(worker -> location == null || location.isBlank()
-                    || (worker.getLocation() != null
-                    && worker.getLocation().toLowerCase()
-                    .contains(location.trim().toLowerCase())))
-            .toList();
+        List<WorkerAccount> allWorkers =
+                workerAccountRepository.findAllWithWorkerProfile();
 
-    model.addAttribute("workers", filteredWorkers);
-    model.addAttribute("workerCount", allWorkers.size());
-    model.addAttribute("searchName", name == null ? "" : name);
-    model.addAttribute("searchLocation", location == null ? "" : location);
+        List<WorkerAccount> filteredWorkers = allWorkers.stream()
 
-    return "admin-workers";
-}
-    // Booking Management
+                .filter(account -> account.getWorkerProfile() != null)
+
+                .filter(account -> name == null || name.isBlank()
+                        || (account.getWorkerProfile().getName() != null
+                        && account.getWorkerProfile().getName()
+                        .toLowerCase()
+                        .contains(name.trim().toLowerCase()))
+                        || (account.getWorkerProfile().getSkills() != null
+                        && account.getWorkerProfile().getSkills()
+                        .toLowerCase()
+                        .contains(name.trim().toLowerCase())))
+
+                .filter(account -> location == null || location.isBlank()
+                        || (account.getWorkerProfile().getLocation() != null
+                        && account.getWorkerProfile().getLocation()
+                        .toLowerCase()
+                        .contains(location.trim().toLowerCase())))
+
+                .toList();
+
+        model.addAttribute("workers", filteredWorkers);
+        model.addAttribute("workerCount", allWorkers.size());
+        model.addAttribute("searchName", name == null ? "" : name);
+        model.addAttribute("searchLocation",
+                location == null ? "" : location);
+
+        return "admin-workers";
+    }
+
+    // APPROVE WORKER
+
+    @PostMapping("/admin/workers/{id}/approve")
+    public String approveWorker(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+
+        WorkerAccount worker = workerAccountRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Worker not found"));
+
+        worker.setVerificationStatus("APPROVED");
+
+        workerAccountRepository.save(worker);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Worker approved successfully."
+        );
+
+        return "redirect:/admin/workers";
+    }
+
+    // REJECT WORKER
+
+    @PostMapping("/admin/workers/{id}/reject")
+    public String rejectWorker(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+
+        WorkerAccount worker = workerAccountRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Worker not found"));
+
+        worker.setVerificationStatus("REJECTED");
+
+        workerAccountRepository.save(worker);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Worker rejected successfully."
+        );
+
+        return "redirect:/admin/workers";
+    }
+
+    // ==============================
+    // BOOKING MANAGEMENT
+    // ==============================
+
     @GetMapping("/admin/bookings")
     public String showBookings(Model model) {
 
         model.addAttribute("bookings", Collections.emptyList());
         model.addAttribute("bookingCount", 0);
 
-        
         return "admin-bookings";
     }
 
-    // Cooperative Management
- // Cooperative Management
-@GetMapping("/admin/cooperatives")
-public String showCooperatives(Model model) {
+    // ==============================
+    // COOPERATIVE MANAGEMENT
+    // ==============================
 
-    List<Cooperative> cooperatives = cooperativeService.findAll();
+    @GetMapping("/admin/cooperatives")
+    public String showCooperatives(Model model) {
 
-    model.addAttribute("cooperatives", cooperatives);
-    model.addAttribute("cooperativeCount", cooperatives.size());
-
-    if (!model.containsAttribute("cooperativeForm")) {
-        model.addAttribute(
-                "cooperativeForm",
-                new CreateCooperativeRequest("", "", "", "", "")
-        );
-    }
-
-    return "admin-cooperatives";
-}
-
-@PostMapping("/admin/cooperatives")
-public String createCooperative(
-        @Valid @org.springframework.web.bind.annotation.ModelAttribute(
-                "cooperativeForm"
-        ) CreateCooperativeRequest request,
-        BindingResult bindingResult,
-        Model model,
-        RedirectAttributes redirectAttributes) {
-
-    if (bindingResult.hasErrors()) {
         List<Cooperative> cooperatives = cooperativeService.findAll();
 
         model.addAttribute("cooperatives", cooperatives);
         model.addAttribute("cooperativeCount", cooperatives.size());
 
+        if (!model.containsAttribute("cooperativeForm")) {
+            model.addAttribute(
+                    "cooperativeForm",
+                    new CreateCooperativeRequest("", "", "", "", "")
+            );
+        }
+
         return "admin-cooperatives";
     }
 
-    try {
-        cooperativeService.create(request);
+    @PostMapping("/admin/cooperatives")
+    public String createCooperative(
+            @Valid @org.springframework.web.bind.annotation.ModelAttribute(
+                    "cooperativeForm"
+            ) CreateCooperativeRequest request,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addFlashAttribute(
-                "successMessage",
-                "Cooperative created successfully."
-        );
+        if (bindingResult.hasErrors()) {
 
-        return "redirect:/admin/cooperatives";
+            List<Cooperative> cooperatives =
+                    cooperativeService.findAll();
 
-    } catch (ResponseStatusException ex) {
+            model.addAttribute("cooperatives", cooperatives);
+            model.addAttribute("cooperativeCount", cooperatives.size());
 
-        if (ex.getStatusCode() == HttpStatus.CONFLICT) {
+            return "admin-cooperatives";
+        }
+
+        try {
+
+            cooperativeService.create(request);
+
             redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "A cooperative with this name already exists."
+                    "successMessage",
+                    "Cooperative created successfully."
             );
 
             return "redirect:/admin/cooperatives";
-        }
 
-        throw ex;
-    }
-}
+        } catch (ResponseStatusException ex) {
 
-@PostMapping("/admin/cooperatives/{id}/delete")
-public String deleteCooperative(
-        @PathVariable Long id,
-        RedirectAttributes redirectAttributes) {
+            if (ex.getStatusCode() == HttpStatus.CONFLICT) {
 
-    try {
-        cooperativeService.deleteById(id);
+                redirectAttributes.addFlashAttribute(
+                        "errorMessage",
+                        "A cooperative with this name already exists."
+                );
 
-        redirectAttributes.addFlashAttribute(
-                "successMessage",
-                "Cooperative deleted successfully."
-        );
+                return "redirect:/admin/cooperatives";
+            }
 
-    } catch (ResponseStatusException ex) {
-
-        if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "The cooperative was not found."
-            );
-        } else {
             throw ex;
         }
     }
 
-    return "redirect:/admin/cooperatives";
-}
+    @PostMapping("/admin/cooperatives/{id}/delete")
+    public String deleteCooperative(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+
+            cooperativeService.deleteById(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Cooperative deleted successfully."
+            );
+
+        } catch (ResponseStatusException ex) {
+
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+
+                redirectAttributes.addFlashAttribute(
+                        "errorMessage",
+                        "The cooperative was not found."
+                );
+
+            } else {
+                throw ex;
+            }
+        }
+
+        return "redirect:/admin/cooperatives";
+    }
 }

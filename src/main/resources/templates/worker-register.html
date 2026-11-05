@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Worker Registration - ServiceNexus</title>
+</head>
+<body>
+
+<h2>Worker Registration</h2>
+
+<p th:if="${errorMessage}"
+   th:text="${errorMessage}"
+   style="color:red"></p>
+
+<form th:action="@{/worker/register}"
+      th:object="${request}"
+      method="post">
+
+    <label>Name</label>
+    <input type="text" th:field="*{name}" required>
+    <p th:errors="*{name}" style="color:red"></p>
+
+    <label>Email</label>
+    <input type="email" th:field="*{email}" required>
+    <p th:errors="*{email}" style="color:red"></p>
+
+    <label>Password</label>
+    <input type="password" th:field="*{password}" required>
+    <p th:errors="*{password}" style="color:red"></p>
+
+    <label>Phone</label>
+    <input type="text" th:field="*{phone}" required>
+    <p th:errors="*{phone}" style="color:red"></p>
+
+    <label>Skills</label>
+    <input type="text" th:field="*{skills}" required>
+    <p th:errors="*{skills}" style="color:red"></p>
+
+    <label>Location</label>
+    <input type="text" th:field="*{location}" required>
+    <p th:errors="*{location}" style="color:red"></p>
+
+    <label>Description</label>
+    <textarea th:field="*{description}"></textarea>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>
+    Already registered?
+    <a th:href="@{/login}">Login here</a>
+</p>
+
+</body>
+</html>

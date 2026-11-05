@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
@@ -39,7 +38,8 @@
             text-decoration: none;
         }
 
-        .worker-dashboard-nav a:hover {
+        .worker-dashboard-nav a:hover,
+        .worker-nav-card a:hover {
             background: #066649;
         }
 
@@ -86,10 +86,6 @@
             text-decoration: none;
         }
 
-        .worker-nav-card a:hover {
-            background: #066649;
-        }
-
         .dashboard-message {
             margin: 15px 0;
             padding: 12px;
@@ -105,6 +101,24 @@
             color: #b42318;
             background: #fff0ef;
         }
+
+        .service-listing {
+            margin: 20px 0;
+            padding: 22px;
+            background: white;
+            border: 1px solid #e8eee9;
+            border-radius: 12px;
+        }
+
+        .service-listing h3 {
+            color: #087f5b;
+        }
+
+        @media (max-width: 600px) {
+            .worker-dashboard {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -112,7 +126,7 @@
 
 <main class="worker-dashboard">
 
-    <!-- Navigation Back to Main Homepage -->
+    <!-- Navigation -->
     <nav class="worker-dashboard-nav">
 
         <h2>ServiceNexus</h2>
@@ -123,12 +137,10 @@
 
     </nav>
 
-
-    <!-- Main Dashboard Heading -->
+    <!-- Dashboard Heading -->
     <h1>Worker Dashboard</h1>
 
     <p>Manage your services, availability and earnings on ServiceNexus.</p>
-
 
     <!-- Success and Error Messages -->
     <p th:if="${success}"
@@ -141,15 +153,30 @@
        class="dashboard-message error-message">
     </p>
 
-
-    <!-- Worker Dashboard Navigation -->
+    <!-- Dashboard Navigation -->
     <section class="worker-navigation">
 
         <h2>Manage Your Work</h2>
 
         <div class="worker-navigation-cards">
 
-            <!-- Availability Dashboard -->
+            <!-- My Profile -->
+            <article class="worker-nav-card">
+
+                <h3>My Profile</h3>
+
+                <p>
+                    View and update your name, phone number,
+                    skills, location and professional information.
+                </p>
+
+                <a th:href="@{/worker/profile}">
+                    Manage Profile
+                </a>
+
+            </article>
+
+            <!-- Availability -->
             <article class="worker-nav-card">
 
                 <h3>Manage Availability</h3>
@@ -165,8 +192,7 @@
 
             </article>
 
-
-            <!-- Earnings Dashboard -->
+            <!-- Earnings -->
             <article class="worker-nav-card">
 
                 <h3>Worker Earnings</h3>
@@ -186,148 +212,141 @@
 
     </section>
 
-
     <!-- Add a New Service -->
-    <h2>Add a Service</h2>
+    <section>
 
-    <form th:action="@{/worker/services}" method="post">
+        <h2>Add a Service</h2>
 
-        <label for="name">Service Name</label>
+        <form th:action="@{/worker/services}" method="post">
 
-        <input type="text"
-               id="name"
-               name="name"
-               required
-               maxlength="100">
+            <label for="name">Service Name</label>
 
+            <input type="text"
+                   id="name"
+                   name="name"
+                   required
+                   maxlength="100">
 
-        <label for="category">Category</label>
+            <label for="category">Category</label>
 
-        <input type="text"
-               id="category"
-               name="category"
-               required
-               maxlength="100">
+            <input type="text"
+                   id="category"
+                   name="category"
+                   required
+                   maxlength="100">
 
+            <label for="description">Description</label>
 
-        <label for="description">Description</label>
+            <textarea id="description"
+                      name="description"
+                      required
+                      maxlength="1000"></textarea>
 
-        <textarea id="description"
-                  name="description"
-                  required
-                  maxlength="1000"></textarea>
+            <label for="price">Price</label>
 
+            <input type="number"
+                   id="price"
+                   name="price"
+                   min="0.01"
+                   step="0.01"
+                   required>
 
-        <label for="price">Price</label>
+            <label for="location">Location</label>
 
-        <input type="number"
-               id="price"
-               name="price"
-               min="0.01"
-               step="0.01"
-               required>
+            <input type="text"
+                   id="location"
+                   name="location"
+                   required
+                   maxlength="200">
 
+            <button type="submit">Add Service</button>
 
-        <label for="location">Location</label>
+        </form>
 
-        <input type="text"
-               id="location"
-               name="location"
-               required
-               maxlength="200">
-
-
-        <button type="submit">Add Service</button>
-
-    </form>
-
+    </section>
 
     <!-- Existing Service Listings -->
-    <h2>Your Service Listings</h2>
+    <section>
 
-    <p th:if="${#lists.isEmpty(services)}">
-        No service listings have been added yet.
-    </p>
+        <h2>Your Service Listings</h2>
 
+        <p th:if="${#lists.isEmpty(services)}">
+            No service listings have been added yet.
+        </p>
 
-    <div th:each="service : ${services}">
+        <div th:each="service : ${services}">
 
-        <article>
+            <article class="service-listing">
 
-            <h3 th:text="${service.name}">
-                Service Name
-            </h3>
+                <h3 th:text="${service.name}">
+                    Service Name
+                </h3>
 
+                <p>
+                    Category:
+                    <span th:text="${service.category}">
+                        Category
+                    </span>
+                </p>
 
-            <p>
-                Category:
-                <span th:text="${service.category}">
-                    Category
-                </span>
-            </p>
+                <p th:text="${service.description}">
+                    Description
+                </p>
 
+                <p>
+                    Price:
+                    <span th:text="${service.price}">
+                        0.00
+                    </span>
+                </p>
 
-            <p th:text="${service.description}">
-                Description
-            </p>
+                <p>
+                    Location:
+                    <span th:text="${service.location}">
+                        Location
+                    </span>
+                </p>
 
+                <p>
+                    Status:
 
-            <p>
-                Price:
-                <span th:text="${service.price}">
-                    0.00
-                </span>
-            </p>
+                    <strong th:if="${service.active}">
+                        Active
+                    </strong>
 
+                    <strong th:unless="${service.active}">
+                        Inactive
+                    </strong>
 
-            <p>
-                Location:
-                <span th:text="${service.location}">
-                    Location
-                </span>
-            </p>
+                </p>
 
+                <!-- Edit Service -->
+                <form th:if="${service.active}"
+                      th:action="@{/worker/services/{id}/edit(id=${service.id})}"
+                      method="get">
 
-            <p>
-                Status:
+                    <button type="submit">
+                        Edit Service
+                    </button>
 
-                <strong th:if="${service.active}">
-                    Active
-                </strong>
+                </form>
 
-                <strong th:unless="${service.active}">
-                    Inactive
-                </strong>
+                <!-- Deactivate Service -->
+                <form th:if="${service.active}"
+                      th:action="@{/worker/services/{id}/deactivate(id=${service.id})}"
+                      method="post">
 
-            </p>
+                    <button type="submit">
+                        Deactivate Service
+                    </button>
 
+                </form>
 
-            <!-- Edit an Active Service -->
-            <form th:if="${service.active}"
-                  th:action="@{/worker/services/{id}/edit(id=${service.id})}"
-                  method="get">
+            </article>
 
-                <button type="submit">
-                    Edit Service
-                </button>
+        </div>
 
-            </form>
-
-
-            <!-- Deactivate an Active Service -->
-            <form th:if="${service.active}"
-                  th:action="@{/worker/services/{id}/deactivate(id=${service.id})}"
-                  method="post">
-
-                <button type="submit">
-                    Deactivate Service
-                </button>
-
-            </form>
-
-        </article>
-
-    </div>
+    </section>
 
 </main>
 
