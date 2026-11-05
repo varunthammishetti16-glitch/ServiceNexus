@@ -8,6 +8,8 @@ import com.servicenexus.dto.ChangePasswordRequest;
 import com.servicenexus.dto.CreateBookingRequest;
 import com.servicenexus.dto.BookingResponse;
 import com.servicenexus.dto.AvailableServiceResponse;
+import com.servicenexus.dto.CustomerDashboardResponse;
+
 import com.servicenexus.service.CustomerService;
 import com.servicenexus.service.BookingService;
 
@@ -126,6 +128,18 @@ public class CustomerController {
                         userDetails.getUsername());
 
         return ResponseEntity.ok(bookings);
+    }
+
+    // GET CUSTOMER DASHBOARD STATISTICS
+    @GetMapping("/me/dashboard")
+    public ResponseEntity<CustomerDashboardResponse> getCustomerDashboard(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        CustomerDashboardResponse response =
+                bookingService.getCustomerDashboard(
+                        userDetails.getUsername());
+
+        return ResponseEntity.ok(response);
     }
 
     // CANCEL CUSTOMER BOOKING

@@ -3,6 +3,7 @@ package com.servicenexus.service;
 
 import com.servicenexus.dto.BookingResponse;
 import com.servicenexus.dto.CreateBookingRequest;
+import com.servicenexus.dto.CustomerDashboardResponse;
 import com.servicenexus.entity.Customer;
 import com.servicenexus.model.Booking;
 import com.servicenexus.model.BookingStatus;
@@ -11,7 +12,7 @@ import com.servicenexus.repository.BookingRepository;
 import com.servicenexus.repository.CustomerRepository;
 import com.servicenexus.repository.WorkerServiceRepository;
 import com.servicenexus.dto.AvailableServiceResponse;
-
+import com.servicenexus.dto.CustomerDashboardResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +125,30 @@ public class BookingService {
                 .map(this::toResponse)
                 .toList();
     }
+    @Transactional(readOnly = true)
+public CustomerDashboardResponse getCustomerDashboard(String authenticatedEmail) {
+
+    Customer customer = customerRepository
+            .findByEmailIgnoreCase(authenticatedEmail.trim())
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Customer not found"));
+
+    Long customerId = customer.getId();
+
+    return new CustomerDashboardResponse(
+            bookingRepository.countByCustomerId(customerId),
+            bookingRepository.countByCustomerIdAndStatus(
+                    customerId, BookingStatus.COMPLETED),
+            bookingRepository.countByCustomerIdAndStatus(
+                    customerId, BookingStatus.PENDING),
+            bookingRepository.countByCustomerIdAndStatus(
+                    customerId, BookingStatus.ACCEPTED),
+            bookingRepository.countByCustomerIdAndStatus(
+                    customerId, BookingStatus.CANCELLED),
+            bookingRepository.countByCustomerIdAndStatus(
+                    customerId, BookingStatus.REJECTED)
+    );
+}
     @Transactional
 public BookingResponse cancelBooking(Long bookingId, String authenticatedEmail) {
 
