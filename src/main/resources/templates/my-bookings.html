@@ -10,29 +10,44 @@
           rel="stylesheet">
 
     <style>
+        :root {
+            --primary: #198754;
+            --primary-dark: #146c43;
+            --primary-light: #e8f5ee;
+            --page-bg: #f4f8f5;
+            --text-dark: #26352b;
+        }
+
         body {
-            background: #f4f7fb;
+            background: var(--page-bg);
             font-family: Arial, sans-serif;
+            color: var(--text-dark);
         }
 
         .navbar {
-            background: #123c69;
+            background: var(--primary-dark);
         }
 
-        .navbar-brand, .navbar a {
+        .navbar-brand,
+        .navbar a {
             color: white !important;
         }
 
+        .navbar a:hover {
+            color: #d1e7dd !important;
+        }
+
         .page-title {
-            color: #123c69;
+            color: var(--primary-dark);
             font-weight: 700;
         }
 
         .booking-card {
             border: none;
             border-radius: 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            box-shadow: 0 4px 16px rgba(25, 135, 84, 0.08);
             margin-bottom: 20px;
+            background: white;
         }
 
         .booking-card .card-body {
@@ -52,8 +67,8 @@
         }
 
         .status-ACCEPTED {
-            background: #cfe2ff;
-            color: #084298;
+            background: #d1e7dd;
+            color: #0f5132;
         }
 
         .status-REJECTED {
@@ -62,8 +77,8 @@
         }
 
         .status-COMPLETED {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #198754;
+            color: white;
         }
 
         .status-CANCELLED {
@@ -72,13 +87,14 @@
         }
 
         .detail-label {
-            color: #777;
+            color: #78857c;
             font-size: 13px;
         }
 
         .detail-value {
             font-weight: 600;
-            color: #333;
+            color: #26352b;
+            overflow-wrap: anywhere;
         }
 
         .empty-state {
@@ -86,16 +102,49 @@
             border-radius: 14px;
             padding: 50px 20px;
             text-align: center;
+            box-shadow: 0 4px 16px rgba(25, 135, 84, 0.06);
+        }
+
+        .empty-state h4 {
+            color: var(--primary-dark);
         }
 
         .btn-book {
-            background: #123c69;
+            background: var(--primary);
             color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 9px 17px;
         }
 
         .btn-book:hover {
-            background: #0b2948;
+            background: var(--primary-dark);
             color: white;
+        }
+
+        .profile-link {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .profile-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .btn-outline-danger {
+            border-radius: 7px;
+        }
+
+        .spinner-border {
+            color: var(--primary) !important;
+        }
+
+        .alert-success {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: #badbcc;
         }
     </style>
 </head>
@@ -108,6 +157,7 @@
 
         <div class="ms-auto">
             <a href="/" class="text-decoration-none me-3">Home</a>
+            <a href="/profile" class="text-decoration-none me-3">My Profile</a>
             <a href="/booking" class="text-decoration-none">Book a Service</a>
         </div>
     </div>
@@ -115,10 +165,12 @@
 
 <div class="container py-5">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
         <div>
             <h2 class="page-title">My Bookings</h2>
-            <p class="text-muted">View and manage your service requests.</p>
+            <p class="text-muted">
+                View and manage your five most recent service requests.
+            </p>
         </div>
 
         <a href="/booking" class="btn btn-book">
@@ -126,10 +178,16 @@
         </a>
     </div>
 
+    <div class="mb-4">
+        <a href="/profile" class="profile-link">
+            View complete booking history in My Profile →
+        </a>
+    </div>
+
     <div id="message" class="alert d-none"></div>
 
     <div id="loading" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
+        <div class="spinner-border"></div>
         <p class="mt-2">Loading your bookings...</p>
     </div>
 
@@ -221,12 +279,14 @@
 
             loading.classList.add("d-none");
 
-            if (!bookings || bookings.length === 0) {
+            const recentBookings = bookings.slice(0, 5);
+
+            if (!recentBookings || recentBookings.length === 0) {
                 emptyState.classList.remove("d-none");
                 return;
             }
 
-            bookingsContainer.innerHTML = bookings.map(booking => {
+            bookingsContainer.innerHTML = recentBookings.map(booking => {
                 const status = booking.status || "PENDING";
 
                 return `

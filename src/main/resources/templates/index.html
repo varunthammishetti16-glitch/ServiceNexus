@@ -99,13 +99,108 @@
             display: block;
             margin-bottom: 8px;
         }
+    
+
+        /* Responsive navbar fix */
+        .main-navbar {
+            padding: 12px 0;
+            z-index: 1000;
+        }
+
+        .main-navbar > .container {
+            flex-wrap: wrap;
+        }
+
+        .main-navbar .navbar-brand {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .main-navbar .navbar-collapse {
+            min-width: 0;
+        }
+
+        .main-navbar .navbar-nav {
+            gap: 2px;
+        }
+
+        .main-navbar .navbar-nav .nav-link {
+            padding: 9px 9px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .main-navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .main-navbar .nav-actions .login-link {
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .main-navbar .nav-actions form {
+            margin: 0;
+        }
+
+        .main-navbar .nav-actions .btn-brand {
+            white-space: nowrap;
+        }
+
+        .main-navbar .navbar-toggler {
+            border: 1px solid #198754;
+            padding: 6px 9px;
+        }
+
+        .main-navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+        }
+
+        @media (max-width: 1399.98px) {
+            .main-navbar .navbar-collapse {
+                flex-basis: 100%;
+                padding-top: 14px;
+            }
+
+            .main-navbar .navbar-nav {
+                align-items: flex-start;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .main-navbar .nav-actions {
+                justify-content: flex-start;
+                align-items: flex-start;
+                margin-top: 12px;
+                padding-top: 14px;
+                border-top: 1px solid #e3ebe6;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .main-navbar .nav-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .main-navbar .navbar-brand {
+                font-size: 20px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
 <!-- NAVIGATION -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top main-navbar">
+<nav class="navbar navbar-expand-xxl navbar-light bg-white sticky-top main-navbar">
     <div class="container">
 
         <a class="navbar-brand brand" th:href="@{/}">

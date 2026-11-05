@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | ServiceNexus</title>
+    <title>Customer Dashboard | ServiceNexus</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,42 +34,90 @@
             text-decoration: none;
         }
 
+        h2, h4, h5 {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+        }
+
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        .welcome-card {
+            background: linear-gradient(120deg, #146c43, #198754);
+            color: white;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .welcome-card p {
+            color: #e2f3e9;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e3ebe6;
+            border-radius: 15px;
+            padding: 22px;
+            height: 100%;
+            box-shadow: 0 5px 20px rgba(30,70,45,.04);
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 800;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .stat-label {
+            color: #667085;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            font-size: 23px;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-section {
+            background: white;
+            border: 1px solid #e3ebe6;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            box-shadow: 0 5px 20px rgba(30,70,45,.04);
+        }
+
         .profile-card {
             background: white;
             border: 1px solid #e3ebe6;
-            border-radius: 18px;
-            padding: 32px;
-            max-width: 700px;
-            margin: 55px auto;
-            box-shadow: 0 10px 35px rgba(30, 70, 45, .06);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
         }
 
         .avatar {
-            width: 76px;
-            height: 76px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             background: #e8f5ed;
             color: #198754;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-
-        h2, h4 {
-            font-family: 'Manrope', sans-serif;
+            font-size: 27px;
             font-weight: 800;
         }
 
         .form-label {
             font-weight: 600;
-            color: #25332d;
         }
 
         .form-control {
-            padding: 12px;
+            padding: 11px;
             border-radius: 9px;
             border-color: #dce6df;
         }
@@ -83,7 +131,7 @@
             background: #198754;
             color: white;
             border: none;
-            padding: 11px 22px;
+            padding: 10px 20px;
             border-radius: 9px;
             font-weight: 600;
         }
@@ -91,6 +139,45 @@
         .btn-brand:hover {
             background: #146c43;
             color: white;
+        }
+
+        .booking-item {
+            border: 1px solid #e3ebe6;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-PENDING {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-ACCEPTED {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-REJECTED {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .status-COMPLETED {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-CANCELLED {
+            background: #e2e3e5;
+            color: #41464b;
         }
 
         .muted {
@@ -104,27 +191,10 @@
             padding: 20px;
         }
 
-        .security-icon {
-            width: 42px;
-            height: 42px;
-            background: #e8f5ed;
-            color: #198754;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
         .password-toggle {
             min-width: 52px;
             border-color: #dce6df;
             background: white;
-        }
-
-        .password-toggle:hover {
-            background: #e8f5ed;
-            border-color: #198754;
         }
 
         .input-group .form-control {
@@ -134,55 +204,173 @@
         .input-group .password-toggle {
             border-radius: 0 9px 9px 0;
         }
+
+        .empty-history {
+            background: #f8faf9;
+            border-radius: 12px;
+            padding: 35px 15px;
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="container">
         <a class="brand" th:href="@{/}">ServiceNexus</a>
 
-        <a th:href="@{/}"
-           class="text-decoration-none text-success fw-semibold">
-            Back to Home
-        </a>
+        <div class="d-flex gap-3 align-items-center">
+            <a href="/booking" class="text-success text-decoration-none fw-semibold">
+                Book Service
+            </a>
+            <a th:href="@{/}" class="text-decoration-none text-dark fw-semibold">
+                Home
+            </a>
+        </div>
     </div>
 </nav>
 
-<div class="container">
-    <div class="profile-card">
+<div class="container dashboard-container">
 
-        <!-- PROFILE HEADER -->
-        <div class="avatar" id="avatar">C</div>
+    <!-- WELCOME SECTION -->
+    <div class="welcome-card">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="mb-2">
+                    Welcome back, <span id="welcomeName">Customer</span>!
+                </h2>
+                <p class="mb-0">
+                    Manage your account and keep track of your service requests.
+                </p>
+            </div>
 
-        <h2>My Profile</h2>
-        <p class="muted">
-            View and manage your personal information.
-        </p>
+            <a href="/booking" class="btn btn-light fw-semibold">
+                + Book a Service
+            </a>
+        </div>
+    </div>
 
-        <div id="message" class="alert d-none" role="alert"></div>
+    <div id="dashboardMessage" class="alert d-none"></div>
 
-        <!-- PROFILE FORM -->
+    <!-- BOOKING STATISTICS -->
+    <h4 class="mb-3">Your Booking Overview</h4>
+
+    <div class="row g-3">
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number" id="totalBookings">0</div>
+                <div class="stat-label">Total Bookings</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number text-success" id="completedBookings">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number text-warning" id="pendingBookings">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-number text-primary" id="acceptedBookings">0</div>
+                <div class="stat-label">Accepted</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-number text-danger" id="rejectedBookings">0</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card">
+                <div class="stat-icon">🚫</div>
+                <div class="stat-number text-secondary" id="cancelledBookings">0</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FULL BOOKING HISTORY -->
+    <section class="dashboard-section">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h4 class="mb-1">Complete Booking History</h4>
+                <p class="muted mb-0 small">
+                    All your service requests, newest first.
+                </p>
+            </div>
+
+            <a href="/my-bookings" class="btn btn-outline-success btn-sm">
+                Recent Bookings
+            </a>
+        </div>
+
+        <div id="historyLoading" class="text-center py-4">
+            <div class="spinner-border text-success"></div>
+            <p class="muted mt-2">Loading booking history...</p>
+        </div>
+
+        <div id="bookingHistory"></div>
+
+        <div id="emptyHistory" class="empty-history d-none">
+            <h5>No bookings yet</h5>
+            <p class="muted">
+                Your service booking history will appear here.
+            </p>
+            <a href="/booking" class="btn btn-brand">
+                Book Your First Service
+            </a>
+        </div>
+
+    </section>
+
+    <!-- PROFILE INFORMATION -->
+    <section class="profile-card">
+
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="avatar" id="avatar">C</div>
+
+            <div>
+                <h4 class="mb-1">Personal Information</h4>
+                <p class="muted mb-0">
+                    View and update your account details.
+                </p>
+            </div>
+        </div>
+
+        <div id="profileMessage" class="alert d-none"></div>
+
         <form id="profileForm">
 
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
-                <input type="text"
-                       class="form-control"
-                       id="name"
-                       maxlength="100"
-                       required>
+                <input type="text" class="form-control"
+                       id="name" maxlength="100" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email Address</label>
-                <input type="email"
-                       class="form-control"
-                       id="email"
-                       readonly>
-
+                <input type="email" class="form-control"
+                       id="email" readonly>
                 <small class="muted">
                     Email address cannot be changed here.
                 </small>
@@ -190,197 +378,114 @@
 
             <div class="mb-3">
                 <label class="form-label">Phone Number</label>
-                <input type="tel"
-                       class="form-control"
-                       id="phone"
-                       maxlength="20">
+                <input type="tel" class="form-control"
+                       id="phone" maxlength="20">
             </div>
 
             <div class="mb-4">
                 <label class="form-label">Address</label>
-                <textarea class="form-control"
-                          id="address"
-                          rows="3"
-                          maxlength="500"></textarea>
+                <textarea class="form-control" id="address"
+                          rows="3" maxlength="500"></textarea>
             </div>
 
-            <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-success"
+                    id="editButton">
+                Edit Profile
+            </button>
 
-                <button type="button"
-                        class="btn btn-outline-success"
-                        id="editButton">
-                    Edit Profile
-                </button>
+            <button type="submit" class="btn btn-brand"
+                    id="saveButton" disabled>
+                Save Changes
+            </button>
 
-                <button type="submit"
-                        class="btn btn-brand"
-                        id="saveButton"
-                        disabled>
-                    Save Changes
-                </button>
-
-            </div>
         </form>
 
-        <!-- PASSWORD AND SECURITY -->
         <hr class="my-4">
 
-        <div class="security-section">
-
-            <div class="d-flex align-items-center gap-3">
-
-                <div class="security-icon">
-                    &#128274;
-                </div>
-
-                <div class="flex-grow-1">
-                    <h4 class="mb-1">Password & Security</h4>
-
-                    <p class="muted mb-0">
-                        Manage your account password securely.
-                    </p>
-                </div>
-
-            </div>
-
-            <hr>
-
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                <div>
-                    <strong>Change Password</strong>
-
-                    <p class="muted mb-0 small">
-                        Update your password to keep your account secure.
-                    </p>
-                </div>
-
-                <button type="button"
-                        class="btn btn-outline-success"
-                        id="togglePasswordButton">
-                    Change Password
-                </button>
-
-            </div>
-
-            <!-- PASSWORD FORM -->
-            <div id="passwordSection" class="mt-4" hidden>
-
-                <div id="passwordMessage"
-                     class="alert d-none"
-                     role="alert"></div>
-
-                <form id="passwordForm">
-
-                    <!-- CURRENT PASSWORD -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Current Password
-                        </label>
-
-                        <div class="input-group">
-                            <input type="password"
-                                   class="form-control"
-                                   id="currentPassword"
-                                   autocomplete="current-password"
-                                   required>
-
-                            <button class="btn password-toggle"
-                                    type="button"
-                                    aria-label="Show current password"
-                                    onclick="togglePasswordVisibility('currentPassword', this)">
-                                👁
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- NEW PASSWORD -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            New Password
-                        </label>
-
-                        <div class="input-group">
-                            <input type="password"
-                                   class="form-control"
-                                   id="newPassword"
-                                   minlength="8"
-                                   maxlength="72"
-                                   autocomplete="new-password"
-                                   required>
-
-                            <button class="btn password-toggle"
-                                    type="button"
-                                    aria-label="Show new password"
-                                    onclick="togglePasswordVisibility('newPassword', this)">
-                                👁
-                            </button>
-                        </div>
-
-                        <small class="muted">
-                            Password must contain at least 8 characters.
-                        </small>
-                    </div>
-
-                    <!-- CONFIRM PASSWORD -->
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Confirm New Password
-                        </label>
-
-                        <div class="input-group">
-                            <input type="password"
-                                   class="form-control"
-                                   id="confirmPassword"
-                                   minlength="8"
-                                   maxlength="72"
-                                   autocomplete="new-password"
-                                   required>
-
-                            <button class="btn password-toggle"
-                                    type="button"
-                                    aria-label="Show confirm password"
-                                    onclick="togglePasswordVisibility('confirmPassword', this)">
-                                👁
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2 flex-wrap">
-
-                        <button type="submit"
-                                class="btn btn-brand"
-                                id="passwordButton">
-                            Update Password
-                        </button>
-
-                        <button type="button"
-                                class="btn btn-light"
-                                id="cancelPasswordButton">
-                            Cancel
-                        </button>
-
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-
-        <!-- CUSTOMER INFORMATION -->
-        <hr class="my-4">
+        <p class="muted mb-1">
+            Customer ID: <strong id="customerId">Loading...</strong>
+        </p>
 
         <p class="muted mb-0">
-            Customer ID:
-            <strong id="customerId">Loading...</strong>
+            Member since: <strong id="createdAt">Loading...</strong>
         </p>
 
-        <p class="muted mt-2 mb-0">
-            Member since:
-            <strong id="createdAt">Loading...</strong>
+    </section>
+
+    <!-- PASSWORD AND SECURITY -->
+    <section class="dashboard-section mb-5">
+
+        <h4>Password & Security</h4>
+        <p class="muted">
+            Manage your account password securely.
         </p>
 
-    </div>
+        <button type="button" class="btn btn-outline-success"
+                id="togglePasswordButton">
+            Change Password
+        </button>
+
+        <div id="passwordSection" class="mt-4" hidden>
+
+            <div id="passwordMessage" class="alert d-none"></div>
+
+            <form id="passwordForm">
+
+                <div class="mb-3">
+                    <label class="form-label">Current Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control"
+                               id="currentPassword"
+                               autocomplete="current-password" required>
+                        <button class="btn password-toggle" type="button"
+                                onclick="togglePasswordVisibility('currentPassword', this)">
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">New Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control"
+                               id="newPassword" minlength="8" maxlength="72"
+                               autocomplete="new-password" required>
+                        <button class="btn password-toggle" type="button"
+                                onclick="togglePasswordVisibility('newPassword', this)">
+                            👁
+                        </button>
+                    </div>
+                    <small class="muted">At least 8 characters.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirm New Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control"
+                               id="confirmPassword" minlength="8" maxlength="72"
+                               autocomplete="new-password" required>
+                        <button class="btn password-toggle" type="button"
+                                onclick="togglePasswordVisibility('confirmPassword', this)">
+                            👁
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-brand"
+                        id="passwordButton">
+                    Update Password
+                </button>
+
+                <button type="button" class="btn btn-light"
+                        id="cancelPasswordButton">
+                    Cancel
+                </button>
+
+            </form>
+        </div>
+
+    </section>
+
 </div>
 
 <script>
@@ -389,82 +494,285 @@
 
     const fields = ['name', 'phone', 'address'];
 
-    const form = document.getElementById('profileForm');
+    const profileForm = document.getElementById('profileForm');
     const editButton = document.getElementById('editButton');
     const saveButton = document.getElementById('saveButton');
-    const message = document.getElementById('message');
+
+    const profileMessage = document.getElementById('profileMessage');
+    const dashboardMessage = document.getElementById('dashboardMessage');
 
     const passwordForm = document.getElementById('passwordForm');
     const passwordMessage = document.getElementById('passwordMessage');
     const passwordButton = document.getElementById('passwordButton');
+    const passwordSection = document.getElementById('passwordSection');
 
-    const passwordSection =
-        document.getElementById('passwordSection');
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[character]);
+    }
 
-    const togglePasswordButton =
-        document.getElementById('togglePasswordButton');
+    function showMessage(element, text, type) {
+        element.textContent = text;
+        element.className = 'alert alert-' + type;
+    }
 
-    const cancelPasswordButton =
-        document.getElementById('cancelPasswordButton');
+    function getCsrfHeaders() {
+        const headers = { 'Content-Type': 'application/json' };
 
+        const token = document.querySelector('meta[name="_csrf"]')?.content;
+        const header = document.querySelector('meta[name="_csrf_header"]')?.content;
 
-    // SHOW OR HIDE PASSWORD
-    function togglePasswordVisibility(inputId, button) {
+        if (token && header) {
+            headers[header] = token;
+        }
 
-        const input = document.getElementById(inputId);
+        return headers;
+    }
 
-        if (input.type === 'password') {
+    function checkAuthentication(response) {
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = '/login';
+            return true;
+        }
+        return false;
+    }
 
-            input.type = 'text';
-            button.textContent = '🙈';
-            button.setAttribute('aria-label', 'Hide password');
+    function formatDate(date) {
+        if (!date) return 'Not available';
 
-        } else {
+        const parts = date.split('-');
+        if (parts.length !== 3) return escapeHtml(date);
 
-            input.type = 'password';
-            button.textContent = '👁';
-            button.setAttribute('aria-label', 'Show password');
+        return parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
 
+    function formatTime(time) {
+        if (!time) return 'Not available';
+
+        const parts = time.split(':');
+        let hours = Number(parts[0]);
+        const minutes = parts[1] || '00';
+        const suffix = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12 || 12;
+
+        return hours + ':' + minutes + ' ' + suffix;
+    }
+
+    // LOAD CUSTOMER PROFILE
+    async function loadProfile() {
+        const response = await fetch('/api/customers/me');
+
+        if (checkAuthentication(response)) return;
+
+        if (!response.ok) {
+            throw new Error('Unable to load customer profile.');
+        }
+
+        const customer = await response.json();
+
+        customerId = customer.id;
+
+        document.getElementById('name').value = customer.name || '';
+        document.getElementById('email').value = customer.email || '';
+        document.getElementById('phone').value = customer.phone || '';
+        document.getElementById('address').value = customer.address || '';
+
+        document.getElementById('welcomeName').textContent =
+            customer.name || 'Customer';
+
+        document.getElementById('avatar').textContent =
+            (customer.name || 'C').charAt(0).toUpperCase();
+
+        document.getElementById('customerId').textContent = customer.id;
+
+        document.getElementById('createdAt').textContent =
+            customer.createdAt
+                ? new Date(customer.createdAt).toLocaleDateString()
+                : 'Not available';
+
+        setEditing(false);
+    }
+
+    // LOAD DASHBOARD STATISTICS
+    async function loadDashboardStats() {
+        const response = await fetch('/api/customers/me/dashboard');
+
+        if (checkAuthentication(response)) return;
+
+        if (!response.ok) {
+            throw new Error('Unable to load booking statistics.');
+        }
+
+        const stats = await response.json();
+
+        document.getElementById('totalBookings').textContent =
+            stats.totalBookings ?? 0;
+
+        document.getElementById('completedBookings').textContent =
+            stats.completedBookings ?? 0;
+
+        document.getElementById('pendingBookings').textContent =
+            stats.pendingBookings ?? 0;
+
+        document.getElementById('acceptedBookings').textContent =
+            stats.acceptedBookings ?? 0;
+
+        document.getElementById('rejectedBookings').textContent =
+            stats.rejectedBookings ?? 0;
+
+        document.getElementById('cancelledBookings').textContent =
+            stats.cancelledBookings ?? 0;
+    }
+
+    // LOAD COMPLETE BOOKING HISTORY
+    async function loadBookingHistory() {
+        const loading = document.getElementById('historyLoading');
+        const container = document.getElementById('bookingHistory');
+        const empty = document.getElementById('emptyHistory');
+
+        loading.classList.remove('d-none');
+        container.innerHTML = '';
+        empty.classList.add('d-none');
+
+        try {
+            const response = await fetch('/api/customers/me/bookings');
+
+            if (checkAuthentication(response)) return;
+
+            if (!response.ok) {
+                throw new Error('Unable to load booking history.');
+            }
+
+            const bookings = await response.json();
+
+            loading.classList.add('d-none');
+
+            if (!bookings || bookings.length === 0) {
+                empty.classList.remove('d-none');
+                return;
+            }
+
+            container.innerHTML = bookings.map(booking => {
+                const status = booking.status || 'PENDING';
+
+                return `
+                    <div class="booking-item">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                            <div>
+                                <h5 class="mb-1">${escapeHtml(booking.serviceName)}</h5>
+                                <small class="muted">${escapeHtml(booking.serviceCategory)}</small>
+                            </div>
+
+                            <span class="status status-${escapeHtml(status)}">
+                                ${escapeHtml(status)}
+                            </span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <small class="muted">Booking ID</small>
+                                <div class="fw-semibold">#${escapeHtml(booking.id)}</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <small class="muted">Date</small>
+                                <div class="fw-semibold">${formatDate(booking.bookingDate)}</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <small class="muted">Preferred Time</small>
+                                <div class="fw-semibold">${formatTime(booking.preferredTime)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <small class="muted">Service Price</small>
+                                <div class="fw-semibold">₹${escapeHtml(booking.price)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <small class="muted">Phone</small>
+                                <div class="fw-semibold">${escapeHtml(booking.customerPhone)}</div>
+                            </div>
+
+                            <div class="col-12">
+                                <small class="muted">Service Address</small>
+                                <div class="fw-semibold">${escapeHtml(booking.serviceAddress)}</div>
+                            </div>
+
+                            <div class="col-12">
+                                <small class="muted">Description</small>
+                                <div>${escapeHtml(booking.description)}</div>
+                            </div>
+                        </div>
+
+                        ${
+                            status === 'PENDING'
+                            ? `<div class="text-end mt-3">
+                                <button class="btn btn-outline-danger btn-sm"
+                                    onclick="cancelBooking(${Number(booking.id)})">
+                                    Cancel Booking
+                                </button>
+                               </div>`
+                            : ''
+                        }
+                    </div>
+                `;
+            }).join('');
+
+        } catch (error) {
+            loading.classList.add('d-none');
+            showMessage(dashboardMessage, error.message, 'danger');
         }
     }
 
+    // CANCEL PENDING BOOKING
+    async function cancelBooking(id) {
+        if (!confirm('Are you sure you want to cancel this booking?')) {
+            return;
+        }
 
-    // RESET PASSWORD VISIBILITY
-    function resetPasswordVisibility() {
+        try {
+            const response = await fetch(
+                '/api/customers/me/bookings/' + id + '/cancel',
+                { method: 'PUT' }
+            );
 
-        const passwordFields = [
-            'currentPassword',
-            'newPassword',
-            'confirmPassword'
-        ];
+            if (checkAuthentication(response)) return;
 
-        passwordFields.forEach(id => {
+            const result = await response.json().catch(() => null);
 
-            const input = document.getElementById(id);
+            if (!response.ok) {
+                throw new Error(
+                    result?.detail ||
+                    result?.message ||
+                    'Unable to cancel booking.'
+                );
+            }
 
-            input.type = 'password';
+            showMessage(
+                dashboardMessage,
+                'Booking cancelled successfully.',
+                'success'
+            );
 
-            const button = input.parentElement.querySelector('button');
+            await Promise.all([
+                loadDashboardStats(),
+                loadBookingHistory()
+            ]);
 
-            button.textContent = '👁';
-            button.setAttribute('aria-label', 'Show password');
-
-        });
+        } catch (error) {
+            showMessage(dashboardMessage, error.message, 'danger');
+        }
     }
-
-
-    // DISPLAY MESSAGE
-    function showMessage(element, text, type) {
-
-        element.textContent = text;
-        element.className = 'alert alert-' + type;
-
-    }
-
 
     // ENABLE OR DISABLE PROFILE EDITING
     function setEditing(enabled) {
-
         fields.forEach(id => {
             document.getElementById(id).readOnly = !enabled;
         });
@@ -473,195 +781,103 @@
 
         editButton.textContent =
             enabled ? 'Cancel Editing' : 'Edit Profile';
-
     }
 
-
-    // LOAD CUSTOMER PROFILE
-    async function loadProfile() {
-
-        try {
-
-            const response = await fetch('/api/customers/me');
-
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = '/login';
-                return;
-            }
-
-            if (!response.ok) {
-                throw new Error('Unable to load profile.');
-            }
-
-            const customer = await response.json();
-
-            customerId = customer.id;
-
-            document.getElementById('name').value =
-                customer.name || '';
-
-            document.getElementById('email').value =
-                customer.email || '';
-
-            document.getElementById('phone').value =
-                customer.phone || '';
-
-            document.getElementById('address').value =
-                customer.address || '';
-
-            document.getElementById('avatar').textContent =
-                (customer.name || 'C').charAt(0).toUpperCase();
-
-            document.getElementById('customerId').textContent =
-                customer.id;
-
-            document.getElementById('createdAt').textContent =
-                customer.createdAt
-                    ? new Date(customer.createdAt).toLocaleDateString()
-                    : 'Not available';
-
-            setEditing(false);
-
-        } catch (error) {
-
-            showMessage(message, error.message, 'danger');
-
-        }
-
-    }
-
-
-    // EDIT PROFILE BUTTON
-    editButton.addEventListener('click', () => {
-
+    editButton.addEventListener('click', async () => {
         if (!saveButton.disabled) {
-
-            loadProfile();
-            message.className = 'alert d-none';
-
+            try {
+                await loadProfile();
+                profileMessage.className = 'alert d-none';
+            } catch (error) {
+                showMessage(profileMessage, error.message, 'danger');
+            }
         } else {
-
             setEditing(true);
-
         }
-
     });
 
-
-    // SAVE PROFILE
-    form.addEventListener('submit', async event => {
-
+    // UPDATE PROFILE
+    profileForm.addEventListener('submit', async event => {
         event.preventDefault();
 
         const payload = {
-
             name: document.getElementById('name').value.trim(),
-
             email: document.getElementById('email').value.trim(),
-
             phone: document.getElementById('phone').value.trim(),
-
             address: document.getElementById('address').value.trim()
-
         };
 
         try {
-
-            const csrfToken =
-                document.querySelector('meta[name="_csrf"]')?.content;
-
-            const csrfHeader =
-                document.querySelector('meta[name="_csrf_header"]')?.content;
-
-            const headers = {
-                'Content-Type': 'application/json'
-            };
-
-            if (csrfToken && csrfHeader) {
-                headers[csrfHeader] = csrfToken;
-            }
-
             const response = await fetch(
                 '/api/customers/' + customerId,
                 {
                     method: 'PUT',
-                    headers: headers,
+                    headers: getCsrfHeaders(),
                     body: JSON.stringify(payload)
                 }
             );
 
+            if (checkAuthentication(response)) return;
+
             if (!response.ok) {
-
-                const result =
-                    await response.json().catch(() => ({}));
-
+                const result = await response.json().catch(() => ({}));
                 throw new Error(
                     result.detail ||
                     result.message ||
-                    'Could not update profile. HTTP Status: ' + response.status
+                    'Could not update profile.'
                 );
-
             }
 
-            const updated = await response.json();
-
-            document.getElementById('name').value = updated.name;
-            document.getElementById('email').value = updated.email;
-            document.getElementById('phone').value = updated.phone || '';
-            document.getElementById('address').value = updated.address || '';
-
-            document.getElementById('avatar').textContent =
-                updated.name.charAt(0).toUpperCase();
-
-            setEditing(false);
-
             showMessage(
-                message,
+                profileMessage,
                 'Your profile was updated successfully!',
                 'success'
             );
 
+            await loadProfile();
+
         } catch (error) {
-
-            showMessage(message, error.message, 'danger');
-
+            showMessage(profileMessage, error.message, 'danger');
         }
-
     });
 
+    // SHOW OR HIDE PASSWORD
+    function togglePasswordVisibility(inputId, button) {
+        const input = document.getElementById(inputId);
 
-    // SHOW OR HIDE PASSWORD FORM
-    togglePasswordButton.addEventListener('click', () => {
+        if (input.type === 'password') {
+            input.type = 'text';
+            button.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            button.textContent = '👁';
+        }
+    }
 
-        passwordSection.hidden = !passwordSection.hidden;
+    function resetPasswordVisibility() {
+        ['currentPassword', 'newPassword', 'confirmPassword'].forEach(id => {
+            const input = document.getElementById(id);
+            input.type = 'password';
+            input.parentElement.querySelector('button').textContent = '👁';
+        });
+    }
 
-        togglePasswordButton.textContent =
-            passwordSection.hidden
-                ? 'Change Password'
-                : 'Hide Password Form';
+    // PASSWORD FORM VISIBILITY
+    document.getElementById('togglePasswordButton')
+        .addEventListener('click', () => {
+            passwordSection.hidden = !passwordSection.hidden;
+        });
 
-    });
-
-
-    // CANCEL PASSWORD CHANGE
-    cancelPasswordButton.addEventListener('click', () => {
-
-        passwordForm.reset();
-
-        resetPasswordVisibility();
-
-        passwordMessage.className = 'alert d-none';
-
-        passwordSection.hidden = true;
-
-        togglePasswordButton.textContent = 'Change Password';
-
-    });
-
+    document.getElementById('cancelPasswordButton')
+        .addEventListener('click', () => {
+            passwordForm.reset();
+            resetPasswordVisibility();
+            passwordMessage.className = 'alert d-none';
+            passwordSection.hidden = true;
+        });
 
     // CHANGE PASSWORD
     passwordForm.addEventListener('submit', async event => {
-
         event.preventDefault();
 
         const currentPassword =
@@ -673,110 +889,64 @@
         const confirmPassword =
             document.getElementById('confirmPassword').value;
 
-
-        if (newPassword.length < 8) {
-
+        if (newPassword.length < 8 || newPassword.length > 72) {
             showMessage(
                 passwordMessage,
-                'New password must contain at least 8 characters.',
+                'New password must contain 8 to 72 characters.',
                 'danger'
             );
-
             return;
-
         }
-
-
-        if (newPassword.length > 72) {
-
-            showMessage(
-                passwordMessage,
-                'New password must not exceed 72 characters.',
-                'danger'
-            );
-
-            return;
-
-        }
-
 
         if (newPassword !== confirmPassword) {
-
             showMessage(
                 passwordMessage,
                 'New password and confirmation do not match.',
                 'danger'
             );
-
             return;
-
         }
-
 
         passwordButton.disabled = true;
         passwordButton.textContent = 'Updating...';
 
-
         try {
-
-            const csrfToken =
-                document.querySelector('meta[name="_csrf"]')?.content;
-
-            const csrfHeader =
-                document.querySelector('meta[name="_csrf_header"]')?.content;
-
-            const headers = {
-                'Content-Type': 'application/json'
-            };
-
-            if (csrfToken && csrfHeader) {
-                headers[csrfHeader] = csrfToken;
-            }
-
-
             const response = await fetch(
                 '/api/customers/me/change-password',
                 {
                     method: 'PUT',
-                    headers: headers,
+                    headers: getCsrfHeaders(),
                     body: JSON.stringify({
-
-                        currentPassword: currentPassword,
-
-                        newPassword: newPassword,
-
-                        confirmPassword: confirmPassword
-
+                        currentPassword,
+                        newPassword,
+                        confirmPassword
                     })
                 }
             );
 
+            if (checkAuthentication(response)) return;
 
             if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = errorText;
 
-    const errorText = await response.text();
+                try {
+                    const result = JSON.parse(errorText);
+                    errorMessage =
+                        result.detail ||
+                        result.message ||
+                        result.error ||
+                        errorText;
+                } catch (e) {
+                    // Keep original response.
+                }
 
-    let errorMessage = errorText;
-
-    try {
-        const result = JSON.parse(errorText);
-        errorMessage =
-            result.detail ||
-            result.message ||
-            result.error ||
-            errorText;
-    } catch (e) {
-        // Keep the original response text.
-    }
-
-    throw new Error(
-        errorMessage || 'Password update failed. HTTP Status: ' + response.status
-    );
-}
-
+                throw new Error(
+                    errorMessage || 'Password update failed.'
+                );
+            }
 
             passwordForm.reset();
-
             resetPasswordVisibility();
 
             showMessage(
@@ -785,28 +955,30 @@
                 'success'
             );
 
-
         } catch (error) {
-
-            showMessage(
-                passwordMessage,
-                error.message,
-                'danger'
-            );
-
+            showMessage(passwordMessage, error.message, 'danger');
         } finally {
-
             passwordButton.disabled = false;
-
             passwordButton.textContent = 'Update Password';
-
         }
-
     });
 
+    // INITIALIZE CUSTOMER DASHBOARD
+    async function initializeDashboard() {
+        try {
+            await loadProfile();
 
-    // INITIALIZE PAGE
-    loadProfile();
+            await Promise.all([
+                loadDashboardStats(),
+                loadBookingHistory()
+            ]);
+
+        } catch (error) {
+            showMessage(dashboardMessage, error.message, 'danger');
+        }
+    }
+
+    initializeDashboard();
 
 </script>
 
