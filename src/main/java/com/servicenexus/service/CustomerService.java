@@ -1,10 +1,13 @@
+
 package com.servicenexus.service;
 
 import com.servicenexus.dto.CustomerRegistrationRequest;
+import com.servicenexus.dto.ChangePasswordRequest;
 import com.servicenexus.dto.CustomerRegistrationResponse;
+import com.servicenexus.dto.CustomerProfileUpdateRequest;
 import com.servicenexus.entity.Customer;
 import com.servicenexus.repository.CustomerRepository;
-import com.servicenexus.dto.CustomerProfileUpdateRequest;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +24,12 @@ public class CustomerService {
     public CustomerService(
             CustomerRepository customerRepository,
             PasswordEncoder passwordEncoder) {
+
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    // CUSTOMER REGISTRATION
     @Transactional
     public CustomerRegistrationResponse register(
             CustomerRegistrationRequest request) {
@@ -33,8 +38,8 @@ public class CustomerService {
 
         if (customerRepository.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "An account with this email already exists"
+                    HttpStatus.CONFLICT,
+                    "An account with this email already exists"
             );
         }
 
@@ -42,7 +47,7 @@ public class CustomerService {
         customer.setName(request.name().trim());
         customer.setEmail(email);
         customer.setPasswordHash(
-            passwordEncoder.encode(request.password())
+                passwordEncoder.encode(request.password())
         );
         customer.setPhone(normalizeOptional(request.phone()));
         customer.setAddress(normalizeOptional(request.address()));
@@ -50,106 +55,167 @@ public class CustomerService {
         try {
             Customer saved = customerRepository.saveAndFlush(customer);
 
-            return new CustomerRegistrationResponse(
-                saved.getId(),
-                saved.getName(),
-                saved.getEmail(),
-                saved.getPhone(),
-                saved.getAddress(),
-                saved.getCreatedAt()
-            );
+            return toResponse(saved);
+
         } catch (DataIntegrityViolationException ex) {
-            // Also protects against simultaneous registrations using
-            // the same email address.
             throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "An account with this email already exists"
+                    HttpStatus.CONFLICT,
+                    "An account with this email already exists"
             );
         }
     }
-    
 
-@Transactional(readOnly = true)
-public CustomerRegistrationResponse getCustomerProfile(
-        Long id,
-        String authenticatedEmail) {
+    // VIEW CUSTOMER PROFILE BY ID
+    @Transactional(readOnly = true)
+    public CustomerRegistrationResponse getCustomerProfile(
+            Long id,
+            String authenticatedEmail) {
 
-    Customer customer = customerRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Customer not found"
-            ));
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Customer not found"
+                ));
 
-    if (!customer.getEmail().equalsIgnoreCase(authenticatedEmail)) {
-        throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN,
-                "You cannot access another customer's profile"
-        );
+        verifyOwnership(customer, authenticatedEmail);
+
+        return toResponse(customer);
     }
 
-    return new CustomerRegistrationResponse(
-            customer.getId(),
-            customer.getName(),
-            customer.getEmail(),
-            customer.getPhone(),
-            customer.getAddress(),
-            customer.getCreatedAt()
-    );
-}
+    // VIEW LOGGED-IN CUSTOMER PROFILE BY EMAIL
+    @Transactional(readOnly = true)
+    public CustomerRegistrationResponse getCustomerProfileByEmail(
+            String email) {
 
+        Customer customer = customerRepository
+                .findByEmailIgnoreCase(email.trim())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Customer not found"
+                ));
+
+        return toResponse(customer);
+    }
+
+    // UPDATE CUSTOMER PROFILE
+    @Transactional
+    public CustomerRegistrationResponse updateCustomerProfile(
+            Long id,
+            CustomerProfileUpdateRequest request,
+            String authenticatedEmail) {
+
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Customer not found"
+                ));
+
+        verifyOwnership(customer, authenticatedEmail);
+
+        String email = request.email().trim().toLowerCase();
+
+        boolean emailUsedByAnotherCustomer =
+                customerRepository.findByEmailIgnoreCase(email)
+                        .filter(existing ->
+                                !existing.getId().equals(id))
+                        .isPresent();
+
+        if (emailUsedByAnotherCustomer) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "An account with this email already exists"
+            );
+        }
+
+        customer.setName(request.name().trim());
+        customer.setEmail(email);
+        customer.setPhone(normalizeOptional(request.phone()));
+        customer.setAddress(normalizeOptional(request.address()));
+
+        Customer saved = customerRepository.save(customer);
+
+        return toResponse(saved);
+    }
+
+    // CHANGE CUSTOMER PASSWORD
 @Transactional
-public CustomerRegistrationResponse updateCustomerProfile(
-        Long id,
-        CustomerProfileUpdateRequest request,
+public void changePassword(
+        ChangePasswordRequest request,
         String authenticatedEmail) {
 
-    Customer customer = customerRepository.findById(id)
+    Customer customer = customerRepository
+            .findByEmailIgnoreCase(authenticatedEmail.trim())
             .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Customer not found"
             ));
 
-    if (!customer.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+    if (!passwordEncoder.matches(
+            request.currentPassword(),
+            customer.getPasswordHash())) {
+
         throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN,
-                "You cannot update another customer's profile"
+                HttpStatus.BAD_REQUEST,
+                "Current password is incorrect"
         );
     }
 
-    String email = request.email().trim().toLowerCase();
-
-    boolean emailUsedByAnotherCustomer =
-            customerRepository.findByEmailIgnoreCase(email)
-                    .filter(existing -> !existing.getId().equals(id))
-                    .isPresent();
-
-    if (emailUsedByAnotherCustomer) {
+    if (!request.newPassword().equals(request.confirmPassword())) {
         throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "An account with this email already exists"
+                HttpStatus.BAD_REQUEST,
+                "New password and confirmation do not match"
         );
     }
 
-    customer.setName(request.name().trim());
-    customer.setEmail(email);
-    customer.setPhone(normalizeOptional(request.phone()));
-    customer.setAddress(normalizeOptional(request.address()));
+    if (passwordEncoder.matches(
+            request.newPassword(),
+            customer.getPasswordHash())) {
 
-    Customer saved = customerRepository.save(customer);
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "New password must be different from current password"
+        );
+    }
 
-    return new CustomerRegistrationResponse(
-            saved.getId(),
-            saved.getName(),
-            saved.getEmail(),
-            saved.getPhone(),
-            saved.getAddress(),
-            saved.getCreatedAt()
+    customer.setPasswordHash(
+            passwordEncoder.encode(request.newPassword())
     );
+
+    customerRepository.save(customer);
 }
+    // CHECK PROFILE OWNERSHIP
+    private void verifyOwnership(
+            Customer customer,
+            String authenticatedEmail) {
+
+        if (!customer.getEmail().equalsIgnoreCase(authenticatedEmail)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You cannot access another customer's profile"
+            );
+        }
+    }
+
+    // CONVERT CUSTOMER ENTITY TO RESPONSE DTO
+    private CustomerRegistrationResponse toResponse(Customer customer) {
+
+        return new CustomerRegistrationResponse(
+                customer.getId(),
+                customer.getName(),
+                customer.getEmail(),
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getCreatedAt()
+        );
+    }
+
+    // HANDLE OPTIONAL FIELDS
     private String normalizeOptional(String value) {
+
         if (value == null || value.isBlank()) {
             return null;
         }
+
         return value.trim();
     }
 }

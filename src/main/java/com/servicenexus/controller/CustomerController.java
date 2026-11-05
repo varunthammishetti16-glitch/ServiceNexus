@@ -5,7 +5,9 @@ import com.servicenexus.dto.CustomerProfileUpdateRequest;
 import com.servicenexus.dto.CustomerRegistrationRequest;
 import com.servicenexus.dto.CustomerRegistrationResponse;
 import com.servicenexus.service.CustomerService;
+import com.servicenexus.dto.ChangePasswordRequest;
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +30,7 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
+    // CUSTOMER REGISTRATION
     @PostMapping("/register")
     public ResponseEntity<CustomerRegistrationResponse> register(
             @Valid @RequestBody CustomerRegistrationRequest request) {
@@ -40,6 +43,20 @@ public class CustomerController {
                 .body(response);
     }
 
+    // GET LOGGED-IN CUSTOMER PROFILE
+    @GetMapping("/me")
+    public ResponseEntity<CustomerRegistrationResponse> getMyProfile(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        CustomerRegistrationResponse response =
+                customerService.getCustomerProfileByEmail(
+                        userDetails.getUsername()
+                );
+
+        return ResponseEntity.ok(response);
+    }
+
+    // GET CUSTOMER PROFILE BY ID
     @GetMapping("/{id}")
     public ResponseEntity<CustomerRegistrationResponse> getCustomerProfile(
             @PathVariable Long id,
@@ -54,6 +71,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    // UPDATE CUSTOMER PROFILE
     @PutMapping("/{id}")
     public ResponseEntity<CustomerRegistrationResponse> updateCustomerProfile(
             @PathVariable Long id,
@@ -69,4 +87,17 @@ public class CustomerController {
 
         return ResponseEntity.ok(response);
     }
+    // CHANGE CUSTOMER PASSWORD
+@PutMapping("/me/change-password")
+public ResponseEntity<String> changePassword(
+        @Valid @RequestBody ChangePasswordRequest request,
+        @AuthenticationPrincipal UserDetails userDetails) {
+
+    customerService.changePassword(
+            request,
+            userDetails.getUsername()
+    );
+
+    return ResponseEntity.ok("Password changed successfully");
+}
 }

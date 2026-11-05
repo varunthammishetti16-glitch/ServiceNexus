@@ -119,30 +119,56 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link active" th:href="@{/}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
-                <li class="nav-item"><a class="nav-link" href="#cooperatives">Cooperatives</a></li>
-                <li class="nav-item"><a class="nav-link" href="#cooperative-management">Cooperative Management</a></li>
-                <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
-            </ul>
+        
+<div class="collapse navbar-collapse" id="navbarMenu">
+    <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+            <a class="nav-link active" th:href="@{/}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#services">Services</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#how-it-works">How It Works</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#cooperatives">Cooperatives</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#cooperative-management">Cooperative Management</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#about">About Us</a>
+        </li>
+    </ul>
 
-            <div class="nav-actions" th:if="${customerLoggedIn}">
-    <span class="login-link">
-        Welcome, <strong th:text="${customerName}">Customer</strong>
-    </span>
-    <form th:action="@{/logout}" method="post" class="d-inline">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <button type="submit" class="btn btn-brand">Logout</button>
-    </form>
+    <!-- LOGGED-IN CUSTOMER -->
+    <div class="nav-actions" th:if="${customerLoggedIn}">
+        <span class="login-link">
+            Welcome, <strong th:text="${customerName}">Customer</strong>
+        </span>
+
+        <a th:href="@{/profile}" class="login-link">
+            My Profile
+        </a>
+
+        <form th:action="@{/logout}" method="post" class="d-inline">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button type="submit" class="btn btn-brand">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- VISITOR -->
+    <div class="nav-actions" th:unless="${customerLoggedIn}">
+        <a href="/login" class="login-link">Log in</a>
+        <a href="/register" class="btn btn-brand">Get Started</a>
+    </div>
 </div>
-<div class="nav-actions" th:unless="${customerLoggedIn}">
-    <a href="/login" class="login-link">Log in</a>
-    <a href="/register" class="btn btn-brand">Get Started</a>
-</div>
-        </div>
+
     </div>
 </nav>
 
@@ -170,7 +196,7 @@
 
                 <form class="search-panel" th:action="@{/services}" method="get">
                     <div class="search-field">
-                        <span class="search-icon">⌕</span>
+                        <span class="search-icon">G��</span>
                         <div class="search-input-wrapper">
                             <label for="serviceSearch">What service do you need?</label>
                             <input type="search" id="serviceSearch" name="q"
@@ -181,7 +207,7 @@
                     <div class="search-divider"></div>
 
                     <div class="search-field location-field">
-                        <span class="location-icon">⌖</span>
+                        <span class="location-icon">G��</span>
                         <div class="search-input-wrapper">
                             <label for="serviceLocation">Your location</label>
                             <input type="text" id="serviceLocation" name="location"
@@ -217,9 +243,9 @@
                                         <div class="house-door"></div>
                                     </div>
                                 </div>
-                                <div class="illustration-tool tool-one">🔧</div>
-                                <div class="illustration-tool tool-two">🧹</div>
-                                <div class="illustration-tool tool-three">🌱</div>
+                                <div class="illustration-tool tool-one">=���</div>
+                                <div class="illustration-tool tool-two">=���</div>
+                                <div class="illustration-tool tool-three">=��</div>
                             </div>
                         </div>
 
@@ -228,17 +254,17 @@
                                 <h3>Good work. Fair opportunity.</h3>
                                 <p>Local people making a local difference.</p>
                             </div>
-                            <span class="visual-arrow">↗</span>
+                            <span class="visual-arrow">G��</span>
                         </div>
                     </div>
 
                     <div class="floating-card floating-card-top">
-                        <span class="floating-icon green-icon">✓</span>
+                        <span class="floating-icon green-icon">G��</span>
                         <div><strong>Community first</strong><small>People-powered services</small></div>
                     </div>
 
                     <div class="floating-card floating-card-bottom">
-                        <span class="floating-icon orange-icon">♡</span>
+                        <span class="floating-icon orange-icon">G��</span>
                         <div><strong>Support local workers</strong><small>Help your neighborhood thrive</small></div>
                     </div>
                 </div>
@@ -251,9 +277,9 @@
 <section class="trust-strip">
     <div class="container">
         <div class="row align-items-center text-center g-3">
-            <div class="col-12 col-md-4"><div class="trust-item"><span>✓</span> Discover local professionals</div></div>
-            <div class="col-12 col-md-4"><div class="trust-item"><span>✓</span> Support fair work opportunities</div></div>
-            <div class="col-12 col-md-4"><div class="trust-item"><span>✓</span> Strengthen your community</div></div>
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G��</span> Discover local professionals</div></div>
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G��</span> Support fair work opportunities</div></div>
+            <div class="col-12 col-md-4"><div class="trust-item"><span>G��</span> Strengthen your community</div></div>
         </div>
     </div>
 </section>
@@ -267,56 +293,56 @@
                 <h2>Everything your home needs. <span>All in one place.</span></h2>
                 <p>Find the right help for everyday tasks and essential repairs.</p>
             </div>
-            <a href="/services" class="section-link">Explore all services <span>→</span></a>
+            <a href="/services" class="section-link">Explore all services <span>G��</span></a>
         </div>
 
         <div class="row g-4">
             <div class="col-6 col-lg-3">
                 <a href="/services?q=cleaning" class="service-card">
-                    <div class="service-icon cleaning-icon">🧹</div>
-                    <h3>Home Cleaning</h3><p>Keep your space fresh and comfortable.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon cleaning-icon">=���</div>
+                    <h3>Home Cleaning</h3><p>Keep your space fresh and comfortable.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=plumbing" class="service-card">
-                    <div class="service-icon plumbing-icon">🔧</div>
-                    <h3>Plumbing</h3><p>Fix leaks and everyday water problems.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon plumbing-icon">=���</div>
+                    <h3>Plumbing</h3><p>Fix leaks and everyday water problems.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=electrical" class="service-card">
-                    <div class="service-icon electrical-icon">⚡</div>
-                    <h3>Electrical Repair</h3><p>Get help with electrical maintenance.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon electrical-icon">G��</div>
+                    <h3>Electrical Repair</h3><p>Get help with electrical maintenance.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=gardening" class="service-card">
-                    <div class="service-icon gardening-icon">🌿</div>
-                    <h3>Gardening</h3><p>Care for your plants and outdoor spaces.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon gardening-icon">=��+</div>
+                    <h3>Gardening</h3><p>Care for your plants and outdoor spaces.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=appliance" class="service-card">
-                    <div class="service-icon appliance-icon">🛠️</div>
-                    <h3>Appliance Repair</h3><p>Help with household appliance problems.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon appliance-icon">=���n+�</div>
+                    <h3>Appliance Repair</h3><p>Help with household appliance problems.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=painting" class="service-card">
-                    <div class="service-icon painting-icon">🎨</div>
-                    <h3>Painting</h3><p>Refresh your walls and living spaces.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon painting-icon">=�Ŀ</div>
+                    <h3>Painting</h3><p>Refresh your walls and living spaces.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services?q=moving" class="service-card">
-                    <div class="service-icon moving-icon">📦</div>
-                    <h3>Moving Help</h3><p>Make your next move more manageable.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon moving-icon">=���</div>
+                    <h3>Moving Help</h3><p>Make your next move more manageable.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
             <div class="col-6 col-lg-3">
                 <a href="/services" class="service-card more-card">
-                    <div class="service-icon more-icon">＋</div>
-                    <h3>Explore More</h3><p>Discover other services near you.</p><span class="service-arrow">↗</span>
+                    <div class="service-icon more-icon">n+�</div>
+                    <h3>Explore More</h3><p>Discover other services near you.</p><span class="service-arrow">G��</span>
                 </a>
             </div>
         </div>
@@ -335,21 +361,21 @@
         <div class="row g-4 mt-3">
             <div class="col-md-4">
                 <div class="step-card">
-                    <div class="step-number">01</div><div class="step-icon">🔎</div>
+                    <div class="step-number">01</div><div class="step-icon">=���</div>
                     <h3>Find your service</h3>
                     <p>Explore available services and find the right kind of help for your needs.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="step-card">
-                    <div class="step-number">02</div><div class="step-icon">📅</div>
+                    <div class="step-number">02</div><div class="step-icon">=���</div>
                     <h3>Choose a time</h3>
                     <p>Review available providers and request a service at a convenient time.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="step-card">
-                    <div class="step-number">03</div><div class="step-icon">🤝</div>
+                    <div class="step-number">03</div><div class="step-icon">=��</div>
                     <h3>Support local work</h3>
                     <p>Get your task done while supporting workers and your local community.</p>
                 </div>
@@ -366,16 +392,16 @@
                 <span class="worker-eyebrow">FOR LOCAL SERVICE PROFESSIONALS</span>
                 <h2>Your skills deserve <span>better opportunities.</span></h2>
                 <p>Discover work opportunities, connect with customers, showcase your skills, and become part of a community that values your contribution.</p>
-                <a href="/register?role=WORKER" class="btn worker-button">Join as a Service Provider <span>→</span></a>
+                <a href="/register?role=WORKER" class="btn worker-button">Join as a Service Provider <span>G��</span></a>
                 <div class="worker-benefits">
-                    <span>✓ Showcase your skills</span>
-                    <span>✓ Manage your availability</span>
-                    <span>✓ Connect with customers</span>
+                    <span>G�� Showcase your skills</span>
+                    <span>G�� Manage your availability</span>
+                    <span>G�� Connect with customers</span>
                 </div>
             </div>
             <div class="worker-visual">
-                <div class="worker-circle"><div class="worker-emoji">🧑‍🔧</div></div>
-                <div class="worker-note"><span>✦</span><div><strong>Your work matters.</strong><small>Grow with your community.</small></div></div>
+                <div class="worker-circle"><div class="worker-emoji">=���G��=���</div></div>
+                <div class="worker-note"><span>G��</span><div><strong>Your work matters.</strong><small>Grow with your community.</small></div></div>
             </div>
         </div>
     </div>
@@ -394,19 +420,19 @@
                 </p>
 
                 <div class="cooperative-benefit">
-                    <span class="benefit-check">✓</span>
+                    <span class="benefit-check">G��</span>
                     <div><h3>Shared opportunities</h3><p>Help local workers discover and coordinate job opportunities.</p></div>
                 </div>
                 <div class="cooperative-benefit">
-                    <span class="benefit-check">✓</span>
+                    <span class="benefit-check">G��</span>
                     <div><h3>Community participation</h3><p>Encourage collaboration between workers, customers, and local organizations.</p></div>
                 </div>
                 <div class="cooperative-benefit">
-                    <span class="benefit-check">✓</span>
+                    <span class="benefit-check">G��</span>
                     <div><h3>Fairer work opportunities</h3><p>Build a service ecosystem that values workers and the communities they serve.</p></div>
                 </div>
 
-                <a href="/cooperatives" class="btn btn-brand mt-3">Discover Cooperatives →</a>
+                <a href="/cooperatives" class="btn btn-brand mt-3">Discover Cooperatives G��</a>
             </div>
 
             <div class="col-lg-6">
@@ -414,10 +440,10 @@
                     <div class="community-orbit orbit-one"></div>
                     <div class="community-orbit orbit-two"></div>
                     <div class="community-center"><span>SN</span><strong>Community</strong></div>
-                    <div class="community-member member-one"><span>👩‍🔧</span><small>Workers</small></div>
-                    <div class="community-member member-two"><span>🏡</span><small>Homes</small></div>
-                    <div class="community-member member-three"><span>🤝</span><small>Cooperatives</small></div>
-                    <div class="community-member member-four"><span>🌱</span><small>Community</small></div>
+                    <div class="community-member member-one"><span>=��G��=���</span><small>Workers</small></div>
+                    <div class="community-member member-two"><span>=���</span><small>Homes</small></div>
+                    <div class="community-member member-three"><span>=��</span><small>Cooperatives</small></div>
+                    <div class="community-member member-four"><span>=��</span><small>Community</small></div>
                 </div>
             </div>
         </div>
@@ -436,46 +462,46 @@
         <div class="row g-4">
             <div class="col-md-6 col-lg-4">
                 <a href="/cooperatives" class="cooperative-management-card">
-                    <div class="cooperative-management-icon">🤝</div>
+                    <div class="cooperative-management-icon">=��</div>
                     <h3>Cooperatives</h3>
                     <p>View and manage worker cooperatives.</p>
-                    <span class="cooperative-management-link">Open Cooperatives →</span>
+                    <span class="cooperative-management-link">Open Cooperatives G��</span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
                 <a href="/cooperative-dashboard" class="cooperative-management-card">
-                    <div class="cooperative-management-icon">📊</div>
+                    <div class="cooperative-management-icon">=���</div>
                     <h3>Cooperative Dashboard</h3>
                     <p>Access the cooperative overview page.</p>
-                    <span class="cooperative-management-link">Open Dashboard →</span>
+                    <span class="cooperative-management-link">Open Dashboard G��</span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
                 <a href="/cooperative-members" class="cooperative-management-card">
-                    <div class="cooperative-management-icon">👥</div>
+                    <div class="cooperative-management-icon">=���</div>
                     <h3>Cooperative Members</h3>
                     <p>Register and view cooperative members.</p>
-                    <span class="cooperative-management-link">Manage Members →</span>
+                    <span class="cooperative-management-link">Manage Members G��</span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
                 <a href="/community-bookings" class="cooperative-management-card">
-                    <div class="cooperative-management-icon">📅</div>
+                    <div class="cooperative-management-icon">=���</div>
                     <h3>Community Bookings</h3>
                     <p>Access community service booking requests.</p>
-                    <span class="cooperative-management-link">View Bookings →</span>
+                    <span class="cooperative-management-link">View Bookings G��</span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
                 <a href="/work-allocation" class="cooperative-management-card">
-                    <div class="cooperative-management-icon">🛠️</div>
+                    <div class="cooperative-management-icon">=���n+�</div>
                     <h3>Work Allocation</h3>
                     <p>Access the work allocation page.</p>
-                    <span class="cooperative-management-link">Open Allocation →</span>
+                    <span class="cooperative-management-link">Open Allocation G��</span>
                 </a>
             </div>
         </div>
@@ -489,7 +515,7 @@
         <h2>Great services start <span>with great communities.</span></h2>
         <p>Whether you need help at home or have a skill to share, there's a place for you at ServiceNexus.</p>
         <div class="cta-buttons">
-            <a href="/services" class="btn btn-brand">Find a Service →</a>
+            <a href="/services" class="btn btn-brand">Find a Service G��</a>
             <a href="/register?role=WORKER" class="btn btn-outline-brand">Become a Provider</a>
         </div>
     </div>
@@ -532,7 +558,7 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© 2026 ServiceNexus. Built for stronger communities.</p>
+            <p>-� 2026 ServiceNexus. Built for stronger communities.</p>
             <p>Local services. Shared opportunities. Community first.</p>
         </div>
     </div>
