@@ -194,6 +194,53 @@
             }
         }
 
+    
+        /* Clickable How It Works cards */
+        .step-card-link {
+            display: block;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .step-card-link:hover {
+            color: inherit;
+            text-decoration: none;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(20, 50, 35, 0.12);
+            border-color: #198754;
+        }
+
+        .step-card-link:focus-visible {
+            outline: 3px solid rgba(25, 135, 84, .45);
+            outline-offset: 4px;
+        }
+
+        .step-card-link .step-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-card-link .step-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .step-card-action {
+            display: inline-block;
+            margin-top: 12px;
+            color: #198754;
+            font-weight: 700;
+        }
+
     </style>
 </head>
 
@@ -525,30 +572,51 @@
         <div class="row g-4 mt-3">
 
             <div class="col-md-4">
-                <div class="step-card">
+                <a class="step-card step-card-link" href="/services"
+                   aria-label="Find your service - open available services">
                     <div class="step-number">01</div>
-                    <div class="step-icon">🔍</div>
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" role="img">
+                            <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                            <path d="m16 16 5 5"></path>
+                        </svg>
+                    </div>
                     <h3>Find your service</h3>
                     <p>Explore available services and find the right kind of help for your needs.</p>
-                </div>
+                    <span class="step-card-action">Browse services <span aria-hidden="true">→</span></span>
+                </a>
             </div>
 
             <div class="col-md-4">
-                <div class="step-card">
+                <a class="step-card step-card-link" href="/booking"
+                   aria-label="Choose a time - open the booking page">
                     <div class="step-number">02</div>
-                    <div class="step-icon">📅</div>
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" role="img">
+                            <rect x="3.5" y="5" width="17" height="16" rx="2"></rect>
+                            <path d="M7.5 3v4M16.5 3v4M3.5 9.5h17M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"></path>
+                        </svg>
+                    </div>
                     <h3>Choose a time</h3>
                     <p>Review available providers and request a service at a convenient time.</p>
-                </div>
+                    <span class="step-card-action">Book a service <span aria-hidden="true">→</span></span>
+                </a>
             </div>
 
             <div class="col-md-4">
-                <div class="step-card">
+                <a class="step-card step-card-link" href="#workers"
+                   aria-label="Support local work - learn how to join as a service provider">
                     <div class="step-number">03</div>
-                    <div class="step-icon">🤝</div>
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" role="img">
+                            <path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z"></path>
+                            <path d="M8.5 12h7M12 8.5v7"></path>
+                        </svg>
+                    </div>
                     <h3>Support local work</h3>
                     <p>Get your task done while supporting workers and your local community.</p>
-                </div>
+                    <span class="step-card-action">Meet our workers <span aria-hidden="true">→</span></span>
+                </a>
             </div>
 
         </div>
